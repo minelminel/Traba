@@ -2,7 +2,7 @@
 
 Clone repo
 ```bash
-  git clone 
+  git clone https://github.com/minelminel/heroku-starter.git
 ```
 
 Configure credentials
