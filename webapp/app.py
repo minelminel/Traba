@@ -14,6 +14,7 @@ from flask import (
     session
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_serializer import SerializerMixin
 # from flask_wtf import FlaskForm
 # from wtforms import StringField, SubmitField, TextAreaField
 from data.data_import import get_states_from_json
@@ -30,8 +31,9 @@ db = SQLAlchemy(app)
 
 
 """-----------------------------------------------------------------------------"""
+"""-----------------------------------------------------------------------------"""
 # posted_at = db.Column(db.DateTime)
-class City_db(db.Model):
+class City_db(db.Model, SerializerMixin):
     id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
     City = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
     State = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
@@ -48,18 +50,20 @@ class City_db(db.Model):
     Companies = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
     Neighborhoods = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
     Notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    
-    def __repr__(self):
-        return "<ID: {}><City: {}><State: {}><Salary: {}><Median Rent: {}><Median Home: {}>\
-            <Cost of Living Index: {}><State Tax: {}><Local Tax: {}><Property Tax: {}>\
-            <Living Cost: {}><Food Cost: {}><Transit Index: {}><Companies: {}>\
-            <Neighborhoods: {}><Notes: {}>"\
-            .format(self.id,self.City,self.State,self.Salary,self.Rent,self.Home,self.Coli,
-            self.StateTax,self.LocalTax,self.PropertyTax,self.Living,self.Food,
-            self.Transit,self.Companies,self.Neighborhoods,self.Notes)
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
+
+    # def __repr__(self):
+    #     return "<ID: {}><City: {}><State: {}><Salary: {}><Median Rent: {}><Median Home: {}>\
+    #         <Cost of Living Index: {}><State Tax: {}><Local Tax: {}><Property Tax: {}>\
+    #         <Living Cost: {}><Food Cost: {}><Transit Index: {}><Companies: {}>\
+    #         <Neighborhoods: {}><Notes: {}><Modified: {}><Created: {}>"\
+    #         .format(self.id,self.City,self.State,self.Salary,self.Rent,self.Home,self.Coli,
+    #         self.StateTax,self.LocalTax,self.PropertyTax,self.Living,self.Food,
+    #         self.Transit,self.Companies,self.Neighborhoods,self.Notes,self.modified_at,self.created_at)
 
 
-class Job_db(db.Model):
+class Job_db(db.Model, SerializerMixin):
     id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
     City = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
     State = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
@@ -76,14 +80,16 @@ class Job_db(db.Model):
     Description = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
     Experience = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
     Notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
 
-    def __repr__(self):
-        return "<ID: {}><City: {}><State: {}><Position: {}><Level: {}><Company: {}>\
-            <Type: {}><Salary: {}><Link: {}><Contact: {}><Title: {}><Phone: {}>\
-            <Email: {}><Description: {}><Experience: {}><Notes: {}>"\
-            .format(self.id,self.City,self.State,self.Position,self.Level,self.Company,self.Type,
-            self.Salary,self.Link,self.Contact,self.Title,self.Phone,
-            self.Email,self.Description,self.Experience,self.Notes)
+    # def __repr__(self):
+    #     return "<ID: {}><City: {}><State: {}><Position: {}><Level: {}><Company: {}>\
+    #         <Type: {}><Salary: {}><Link: {}><Contact: {}><Title: {}><Phone: {}>\
+    #         <Email: {}><Description: {}><Experience: {}><Notes: {}><Modified: {}><Created: {}>"\
+    #         .format(self.id,self.City,self.State,self.Position,self.Level,self.Company,self.Type,
+    #         self.Salary,self.Link,self.Contact,self.Title,self.Phone,
+    #         self.Email,self.Description,self.Experience,self.Notes,self.modified_at,self.created_at)
 
 """-----------------------------------------------------------------------------"""
 # de_comma = lambda x: x.replace(',', '')
@@ -91,16 +97,10 @@ def handleAddCity(request_dict):
     if ''.join(request_dict.values()).strip() == '':
         return None
     else:
-        safeStrings = ['State']
         titleStrings = ['City']
         floatStrings = ['Rent','Home','Coli','Salary','StateTax','LocalTax','PropertyTax','Living','Food','Transit']
-        textStrings = ['Companies','Neighborhoods','Notes']
+        textStrings = ['State','Companies','Neighborhoods','Notes']
         try:
-            for each in safeStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    pass
             for each in titleStrings:
                 if request_dict[each] == '':
                     request_dict[each] = None
@@ -125,17 +125,11 @@ def handleAddJob(request_dict):
     if ''.join(request_dict.values()).strip() == '':
         return None
     else:
-        safeStrings = ['State','Link','Email']
-        titleStrings = ['City','Position','Level','Company','Type','Contact','Title']
+        titleStrings = ['City','Position','Level','Type','Contact','Title']
         floatStrings = ['Salary']
         intStrings = ['Phone']
-        textStrings = ['Description','Experience','Notes']
+        textStrings = ['State','Link','Email','Company','Description','Experience','Notes']
         try:
-            for each in safeStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    pass
             for each in titleStrings:
                 if request_dict[each] == '':
                     request_dict[each] = None
@@ -206,7 +200,7 @@ def addcity():
         return redirect(url_for('dashboard'))
     States = get_states_from_json()
     return render_template('addcity.html',States=States)
-    # if city already exists, pop error msg and redirect user to edit existing page
+
 
 """-----------------------------------------------------------------------------"""
 @app.route('/addjob', methods=["GET","POST"])
@@ -234,21 +228,40 @@ def addjob():
 """-----------------------------------------------------------------------------"""
 @app.route('/cities')
 def cities():
-    Cities = City_db.query.all()
-    return render_template('cities.html',Cities=Cities)
+    results = City_db.query.all()
+    CityList = []
+    Flag = True
+    if results:
+        for result in results:
+            CityList.append(result.to_dict())
+        Flag = False
+    return render_template('cities.html',Cities=CityList,Flag=Flag)
+
 
 """-----------------------------------------------------------------------------"""
 @app.route('/jobs')
 def jobs():
-    Jobs = Job_db.query.all()
-    return render_template('jobs.html',Jobs=Jobs)
+    results = Job_db.query.all()
+    JobList = []
+    Flag = True
+    if results:
+        for result in results:
+            JobList.append(result.to_dict())
+        Flag = False
+    return render_template('jobs.html',Jobs=JobList,Flag=Flag)
 
 
 """-----------------------------------------------------------------------------"""
 @app.route('/interactions')
 def interactions():
-    return render_template('interactions.html')
+    Flag = True
+    return render_template('interactions.html',Flag=Flag)
 
+
+"""-----------------------------------------------------------------------------"""
+@app.route('/addinteraction')
+def addinteraction():
+    return render_template('addinteraction.html')
 
 """-----------------------------------------------------------------------------"""
 @app.route('/calendar')
@@ -257,27 +270,12 @@ def calendar():
 
 
 """-----------------------------------------------------------------------------"""
+@app.errorhandler(404)
+def not_found(e):
+    Back = request.referrer or url_for('index')
+    return render_template('404.html',Back=Back)
+
+"""-----------------------------------------------------------------------------"""
 if __name__ == '__main__':
     app.secret_key = 'correcthorsebatterystaple'
     app.run(host='0.0.0.0',debug=True)
-
-
-
-
-
-
-    # state = request_data['State']                         Safe, empty str->None
-    # city = request_data['City']                           Sanitize, Title
-    # coli = request_data['Coli']                           Decimal
-    # salary = request_data['Salary']                       Decimal _,2
-    # rent = request_data['Rent']                           Int
-    # home = request_data['Home']                           Int
-    # stateTax = request_data['StateTax']                   Decimal
-    # localTax = request_data['LocalTax']                   Decimal
-    # propertyTax = request_data['PropertyTax']             Decimal
-    # living = request_data['Living']                       Decimal _,2
-    # food = request_data['Food']                           Decimal _,2
-    # transit = request_data['Transit']                     Decimal _,2
-    # companies = request_data['Companies']                 Sanitize, long text str
-    # neighborhoods = request_data['Neighborhoods']         Sanitize, long text str
-    # notes = request_data['Notes']                         Sanitize, long text str
