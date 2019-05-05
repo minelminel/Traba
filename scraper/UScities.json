@@ -1,0 +1,312 @@
+{
+    "Albany, NY": {
+        "Abbreviation": "NY",
+        "City": "Albany",
+        "State": ""
+    },
+    "Albuquerque, NM": {
+        "Abbreviation": "NM",
+        "City": "Albuquerque",
+        "State": ""
+    },
+    "Amarillo, TX": {
+        "Abbreviation": "TX",
+        "City": "Amarillo",
+        "State": ""
+    },
+    "Anchorage, AK": {
+        "Abbreviation": "AK",
+        "City": "Anchorage",
+        "State": ""
+    },
+    "Asheville, NC": {
+        "Abbreviation": "NC",
+        "City": "Asheville",
+        "State": ""
+    },
+    "Atlanta, GA": {
+        "Abbreviation": "GA",
+        "City": "Atlanta",
+        "State": ""
+    },
+    "Austin, TX": {
+        "Abbreviation": "TX",
+        "City": "Austin",
+        "State": ""
+    },
+    "Baltimore, MD": {
+        "Abbreviation": "MD",
+        "City": "Baltimore",
+        "State": ""
+    },
+    "Boise, ID": {
+        "Abbreviation": "ID",
+        "City": "Boise",
+        "State": ""
+    },
+    "Boston, MA": {
+        "Abbreviation": "MA",
+        "City": "Boston",
+        "State": ""
+    },
+    "Boulder, CO": {
+        "Abbreviation": "CO",
+        "City": "Boulder",
+        "State": ""
+    },
+    "Brooklyn, NY": {
+        "Abbreviation": "NY",
+        "City": "Brooklyn",
+        "State": ""
+    },
+    "Buffalo, NY": {
+        "Abbreviation": "NY",
+        "City": "Buffalo",
+        "State": ""
+    },
+    "Charlotte, NC": {
+        "Abbreviation": "NC",
+        "City": "Charlotte",
+        "State": ""
+    },
+    "Chicago, IL": {
+        "Abbreviation": "IL",
+        "City": "Chicago",
+        "State": ""
+    },
+    "Cincinnati, OH": {
+        "Abbreviation": "OH",
+        "City": "Cincinnati",
+        "State": ""
+    },
+    "Cleveland, OH": {
+        "Abbreviation": "OH",
+        "City": "Cleveland",
+        "State": ""
+    },
+    "Columbus, OH": {
+        "Abbreviation": "OH",
+        "City": "Columbus",
+        "State": ""
+    },
+    "Dallas, TX": {
+        "Abbreviation": "TX",
+        "City": "Dallas",
+        "State": ""
+    },
+    "Denver, CO": {
+        "Abbreviation": "CO",
+        "City": "Denver",
+        "State": ""
+    },
+    "Eugene, OR": {
+        "Abbreviation": "OR",
+        "City": "Eugene",
+        "State": ""
+    },
+    "Fresno, CA": {
+        "Abbreviation": "CA",
+        "City": "Fresno",
+        "State": ""
+    },
+    "Honolulu, HI": {
+        "Abbreviation": "HI",
+        "City": "Honolulu",
+        "State": ""
+    },
+    "Houston, TX": {
+        "Abbreviation": "TX",
+        "City": "Houston",
+        "State": ""
+    },
+    "Indianapolis, IN": {
+        "Abbreviation": "IN",
+        "City": "Indianapolis",
+        "State": ""
+    },
+    "Jacksonville, FL": {
+        "Abbreviation": "FL",
+        "City": "Jacksonville",
+        "State": ""
+    },
+    "Kansas City, MO": {
+        "Abbreviation": "MO",
+        "City": "Kansas City",
+        "State": ""
+    },
+    "Knoxville, TN": {
+        "Abbreviation": "TN",
+        "City": "Knoxville",
+        "State": ""
+    },
+    "Las Vegas, NV": {
+        "Abbreviation": "NV",
+        "City": "Las Vegas",
+        "State": ""
+    },
+    "Little Rock, AR": {
+        "Abbreviation": "AR",
+        "City": "Little Rock",
+        "State": ""
+    },
+    "Los Angeles, CA": {
+        "Abbreviation": "CA",
+        "City": "Los Angeles",
+        "State": ""
+    },
+    "Louisville, KY": {
+        "Abbreviation": "KY",
+        "City": "Louisville",
+        "State": ""
+    },
+    "Madison, WI": {
+        "Abbreviation": "WI",
+        "City": "Madison",
+        "State": ""
+    },
+    "Memphis, TN": {
+        "Abbreviation": "TN",
+        "City": "Memphis",
+        "State": ""
+    },
+    "Miami, FL": {
+        "Abbreviation": "FL",
+        "City": "Miami",
+        "State": ""
+    },
+    "Milwaukee, WI": {
+        "Abbreviation": "WI",
+        "City": "Milwaukee",
+        "State": ""
+    },
+    "Minneapolis, MN": {
+        "Abbreviation": "MN",
+        "City": "Minneapolis",
+        "State": ""
+    },
+    "Nashville, TN": {
+        "Abbreviation": "TN",
+        "City": "Nashville",
+        "State": ""
+    },
+    "New York, NY": {
+        "Abbreviation": "NY",
+        "City": "New York",
+        "State": ""
+    },
+    "Oakland, CA": {
+        "Abbreviation": "CA",
+        "City": "Oakland",
+        "State": ""
+    },
+    "Orlando, FL": {
+        "Abbreviation": "FL",
+        "City": "Orlando",
+        "State": ""
+    },
+    "Philadelphia, PA": {
+        "Abbreviation": "PA",
+        "City": "Philadelphia",
+        "State": ""
+    },
+    "Phoenix, AZ": {
+        "Abbreviation": "AZ",
+        "City": "Phoenix",
+        "State": ""
+    },
+    "Pittsburgh, PA": {
+        "Abbreviation": "PA",
+        "City": "Pittsburgh",
+        "State": ""
+    },
+    "Portland, OR": {
+        "Abbreviation": "OR",
+        "City": "Portland",
+        "State": ""
+    },
+    "Raleigh, NC": {
+        "Abbreviation": "NC",
+        "City": "Raleigh",
+        "State": ""
+    },
+    "Reno, NV": {
+        "Abbreviation": "NV",
+        "City": "Reno",
+        "State": ""
+    },
+    "Richmond, VA": {
+        "Abbreviation": "VA",
+        "City": "Richmond",
+        "State": ""
+    },
+    "Rochester, NY": {
+        "Abbreviation": "NY",
+        "City": "Rochester",
+        "State": ""
+    },
+    "Sacramento, CA": {
+        "Abbreviation": "CA",
+        "City": "Sacramento",
+        "State": ""
+    },
+    "Saint Louis, MO": {
+        "Abbreviation": "MO",
+        "City": "Saint Louis",
+        "State": ""
+    },
+    "Salt Lake City, UT": {
+        "Abbreviation": "UT",
+        "City": "Salt Lake City",
+        "State": ""
+    },
+    "San Antonio, TX": {
+        "Abbreviation": "TX",
+        "City": "San Antonio",
+        "State": ""
+    },
+    "San Diego, CA": {
+        "Abbreviation": "CA",
+        "City": "San Diego",
+        "State": ""
+    },
+    "San Francisco, CA": {
+        "Abbreviation": "CA",
+        "City": "San Francisco",
+        "State": ""
+    },
+    "San Jose, CA": {
+        "Abbreviation": "CA",
+        "City": "San Jose",
+        "State": ""
+    },
+    "Seattle, WA": {
+        "Abbreviation": "WA",
+        "City": "Seattle",
+        "State": ""
+    },
+    "Tacoma, WA": {
+        "Abbreviation": "WA",
+        "City": "Tacoma",
+        "State": ""
+    },
+    "Tampa, FL": {
+        "Abbreviation": "FL",
+        "City": "Tampa",
+        "State": ""
+    },
+    "Tucson, AZ": {
+        "Abbreviation": "AZ",
+        "City": "Tucson",
+        "State": ""
+    },
+    "Tulsa, OK": {
+        "Abbreviation": "OK",
+        "City": "Tulsa",
+        "State": ""
+    },
+    "Washington, DC": {
+        "Abbreviation": "DC",
+        "City": "Washington",
+        "State": ""
+    }
+}
