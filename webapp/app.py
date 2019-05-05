@@ -3,6 +3,7 @@ import os
 import re
 import json
 import datetime
+import urllib.parse
 from flask import (
     Flask,
     render_template,
@@ -13,24 +14,29 @@ from flask import (
     flash,
     session
 )
+from flask_api import (
+    FlaskAPI,
+    status,
+    exceptions
+)
+from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 # from flask_wtf import FlaskForm
 # from wtforms import StringField, SubmitField, TextAreaField
-from data.data_import import get_states_from_json
+from data.data_import import get_state_names_from_json, get_state_abbreviations_from_json
 
 """-----------------------------------------------------------------------------"""
 project_dir = os.path.dirname(os.path.abspath(__file__))
 database_file = "sqlite:///{}".format(os.path.join(project_dir, "trabaDB.db"))
 
 app = Flask(__name__)
+api = Api(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-
-"""-----------------------------------------------------------------------------"""
 """-----------------------------------------------------------------------------"""
 # posted_at = db.Column(db.DateTime)
 class City_db(db.Model, SerializerMixin):
@@ -91,36 +97,35 @@ class Job_db(db.Model, SerializerMixin):
     #         self.Salary,self.Link,self.Contact,self.Title,self.Phone,
     #         self.Email,self.Description,self.Experience,self.Notes,self.modified_at,self.created_at)
 
+
 """-----------------------------------------------------------------------------"""
-# de_comma = lambda x: x.replace(',', '')
 def handleAddCity(request_dict):
     if ''.join(request_dict.values()).strip() == '':
         return None
     else:
-        titleStrings = ['City']
+        # check if city and state are present - REQUIRED
+        # if city and state present, check to see which fields are missing
+        # any fields that are missing, add to dict as default values
+        titleStrings = ['City','State']
+        for string in titleStrings:
+            if string not in list(request_dict.keys()):
+                return 'required string not in request'
         floatStrings = ['Rent','Home','Coli','Salary','StateTax','LocalTax','PropertyTax','Living','Food','Transit']
-        textStrings = ['State','Companies','Neighborhoods','Notes']
+        textStrings = ['Companies','Neighborhoods','Notes']
         try:
             for each in titleStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    request_dict[each] = request_dict[each].title()
+                request_dict[each] = request_dict[each].title()
             for each in floatStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    request_dict[each] = float(request_dict[each])
+                if each in list(request_dict.keys()):
+                    request_dict[each] = None if request_dict[each] == '' else float(request_dict[each])
             for each in textStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    pass
+                if each in list(request_dict.keys()):
+                    if request_dict[each] == '': request_dict[each] = None
             return request_dict
         except:
             return None
 
-
+"""-----------------------------------------------------------------------------"""
 def handleAddJob(request_dict):
     if ''.join(request_dict.values()).strip() == '':
         return None
@@ -154,30 +159,25 @@ def handleAddJob(request_dict):
         except:
             return None
 
-
 """-----------------------------------------------------------------------------"""
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 """-----------------------------------------------------------------------------"""
 @app.route("/home", methods=["GET", "POST"])
 def home():
     return render_template("home.html")
 
-
 """-----------------------------------------------------------------------------"""
 @app.route('/settings')
 def settings():
     return render_template('settings.html')
 
-
 """-----------------------------------------------------------------------------"""
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
-
 
 """-----------------------------------------------------------------------------"""
 @app.route('/addcity', methods=["GET","POST"])
@@ -198,9 +198,8 @@ def addcity():
             pass
         flash('City successfully created', 'success') if db_response else flash('Could not create city', 'warning')
         return redirect(url_for('dashboard'))
-    States = get_states_from_json()
+    States = get_state_abbreviations_from_json()
     return render_template('addcity.html',States=States)
-
 
 """-----------------------------------------------------------------------------"""
 @app.route('/addjob', methods=["GET","POST"])
@@ -221,9 +220,8 @@ def addjob():
             pass
         flash('Job successfully created', 'success') if db_response else flash('Could not create job', 'warning')
         return redirect(url_for('dashboard'))
-    States = get_states_from_json()
+    States = get_state_abbreviations_from_json()
     return render_template('addjob.html',States=States)
-
 
 """-----------------------------------------------------------------------------"""
 @app.route('/cities')
@@ -237,7 +235,6 @@ def cities():
         Flag = False
     return render_template('cities.html',Cities=CityList,Flag=Flag)
 
-
 """-----------------------------------------------------------------------------"""
 @app.route('/jobs')
 def jobs():
@@ -250,13 +247,11 @@ def jobs():
         Flag = False
     return render_template('jobs.html',Jobs=JobList,Flag=Flag)
 
-
 """-----------------------------------------------------------------------------"""
 @app.route('/interactions')
 def interactions():
     Flag = True
     return render_template('interactions.html',Flag=Flag)
-
 
 """-----------------------------------------------------------------------------"""
 @app.route('/addinteraction')
@@ -268,7 +263,6 @@ def addinteraction():
 def calendar():
     return render_template('calendar.html')
 
-
 """-----------------------------------------------------------------------------"""
 @app.errorhandler(404)
 def not_found(e):
@@ -276,6 +270,82 @@ def not_found(e):
     return render_template('404.html',Back=Back)
 
 """-----------------------------------------------------------------------------"""
+class ApiSplash(Resource):
+
+    def get(self):
+        return jsonify({
+                'host':'localhost:5000',
+                'endpoints':['/api/city','/api/job'],
+                'methods':['GET','POST'],
+                'classes':['cities','jobs','info','query'],
+                'message':'welcome, user!',
+                'token':'not required'
+                })
+    def post(self):
+        if bool(request.args):
+            return jsonify({
+                'data':request.args,
+                'path':{'url':request.url,
+                'encoded':urllib.parse.quote_plus(request.url)}
+                })
+        else:
+            return jsonify({'host':'localhost:5000',
+                    'endpoints':['/city','/job'],
+                    'methods':['GET','POST'],
+                    'message':'welcome, user!',
+                    'token':'not required'})
+
+
+class ApiCity(Resource):
+    def get(self):
+        data = request.args
+        keys = list(request.args.keys())
+        values = list(request.args.values())
+        return jsonify({'Data':data,'Keys':keys,'Values':values})
+
+    def post(self):
+        valid_list = list(City_db.query.first().to_dict().keys())
+        hidden_keys = ['id','created_at','modified_at']
+        for thing in hidden_keys:
+            if thing in valid_list: valid_list.remove(thing)
+        # valid_list is now good to compare against
+        # ** check to make sure City and State are present, otherwise Error. for now assume safe case
+        user_keys = list(request.args.keys())
+        user_filtered = {}
+        for keey in user_keys:
+            if keey in valid_list:
+                # get the users data and add to dict
+                user_filtered[keey] = request.args[keey]
+        Data = handleAddCity(user_filtered)
+        # check if city already exists in database, respond with error message, for now add new row
+        # q = City_db.query().first().filter(City_db.City == Data['City'])
+        db_response = False
+        try:
+            cls = City_db(**Data)
+            db.session.add(cls)
+            db.session.commit()
+            db_response = True
+        except:
+            pass
+        return jsonify({'valid keys':valid_list,
+                        'user keys':user_keys,
+                        'filtered request':Data,
+                        'db response':db_response})
+
+class ApiJob(Resource):
+    def get(self):
+        data = request.args
+        keys = list(request.args.keys())
+        values = list(request.args.values())
+        return jsonify({'Data':data,'Keys':keys,'Values':values})
+
+
+"""-----------------------------------------------------------------------------"""
+api.add_resource(ApiSplash, '/api')
+api.add_resource(ApiCity, '/api/city')
+api.add_resource(ApiJob, '/api/job')
+
+"""-----------------------------------------------------------------------------"""
 if __name__ == '__main__':
     app.secret_key = 'correcthorsebatterystaple'
-    app.run(host='0.0.0.0',debug=True)
+    app.run(host='0.0.0.0',port=5000,debug=True)

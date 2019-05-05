@@ -8,6 +8,10 @@
 	<!-- ROW 1 -->
 	<div class="form-row">
 		<div class="form-group col-md-4">
+			<label for="FormGroupInlineCity">City</label>
+			<input type="text" class="form-control" placeholder="" id="FormGroupInlineCity" name="City" required>
+		</div>
+		<div class="form-group col-md-4">
 			<label for="FormGroupInlineState">State</label>
 			<select id="FormGroupInlineState" class="form-control" name="State" required>
 				<option selected></option>
@@ -15,10 +19,6 @@
 				<option>{{State}}</option>
 				{% endfor %}
 			</select>
-		</div>
-		<div class="form-group col-md-4">
-			<label for="FormGroupInlineCity">City</label>
-			<input type="text" class="form-control" placeholder="" id="FormGroupInlineCity" name="City" required>
 		</div>
 		<div class="form-group col-md-4">
 			<label for="FormGroupInlineColi">Cost of Living Index</label>
