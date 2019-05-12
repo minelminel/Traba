@@ -4,6 +4,57 @@
 
 <h1>Dashboard</h1>
 <hr>
-<h4>🚧 under construction 🚧</h4>
 
+<table>
+	<tr>
+		<td>
+			<h3>Hello, {{ session.username }}</h3>
+		</td>
+		<td> ... </td>
+		<td>
+			<h6>{{ now }}</h6>
+		</td>
+	</tr>
+</table>
+
+<hr>
+
+<div class="container-fluid">
+	<a href="/cities" class="badge badge-primary mr-2">Cities</a>
+	<a href="/jobs" class="badge badge-primary mr-2">Jobs</a>
+	<a href="/interactions" class="badge badge-primary mr-4">Interactions</a>
+	<!-- </div><div> -->
+	<a href="/addcity" class="badge badge-success mr-2">Add City</a>
+	<a href="/addjob" class="badge badge-success mr-2">Add Job</a>
+	<a href="/addinteraction" class="badge badge-success mr-4">Add Interaction</a>
+	<!-- </div><div> -->
+	<a href="/calendar" class="badge badge-info mr-2">Calendar</a>
+	<a href="/settings" class="badge badge-info mr-2">Settings</a>
+	<a href="#" class="badge badge-info mr-4">Profile</a>
+</div>
+<hr>
+<div class="container-fluid">
+	<table class="">
+		<tr>
+			<td>
+				<form action="{{url_for('reset_city')}}" method="post">
+					<input type="hidden" name="_method" value="DELETE">
+					<input type="submit" value="Reset City" class="btn btn-danger btn-sm mr-4">
+				</form>
+			</td>
+			<td>
+				<form action="{{url_for('reset_job')}}" method="post" disabled>
+					<input type="hidden" name="_method" value="DELETE">
+					<input type="submit" value="Reset Jobs" class="btn btn-danger btn-sm mr-4">
+				</form>
+			</td>
+			<td>
+				<form action="{{url_for('reset_interaction')}}" method="post" disabled>
+					<input type="hidden" name="_method" value="DELETE">
+					<input type="submit" value="Reset Interactions" class="btn btn-danger btn-sm mr-2">
+				</form>
+			</td>
+		</tr>
+	</table>
+</div>
 {% endblock %}

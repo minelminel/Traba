@@ -1,15 +1,33 @@
 {% extends 'layout.html' %}
-
 {% block body %}
 
 <h1>Interactions</h1>
 <hr>
 
-<h4>🚧 under construction 🚧</h4>
-
 {% if Flag %}
 <p>Nothing to display, try adding some interactions</p>
+{% else %}
+
+<table class="table table-sm table-striped">
+	<thead>
+		<tr>
+			{% for colname in result[0].keys() %}
+			<th scope="col">{{ colname }}</th>
+			{% endfor %}
+			<th scope="col">Edit</th>
+		</tr>
+	</thead>
+	{% for res in result %}
+	<tr>
+		{% for each in res.values() %}
+		<td>{{ each }}</td>
+		{% endfor %}
+		<!-- <td><a href="/editinteraction/{{res['Id']}}" class="btn btn-outline-info btn-sm pull-right">Edit</a></td> -->
+		<td><a href="/editinteraction/{{res['Id']}}" class="badge badge-info pull-right">Edit</a></td>
+	</tr>
+	{% endfor %}
+</table>
+
 {% endif %}
 <a href="/addinteraction" class="badge badge-primary">Add Interaction</a>
-
 {% endblock %}

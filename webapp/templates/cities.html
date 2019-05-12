@@ -1,50 +1,33 @@
 {% extends 'layout.html' %}
-
 {% block body %}
-
 <h1>Cities</h1>
 <hr>
-
-
-<table class="table table-sm table-striped">
-	<thead>
-		<tr>
-			<th scope="col">#</th>
-			<th scope="col">City</th>
-			<th scope="col">State</th>
-			<th scope="col">Avg Salary</th>
-			<th scope="col">Cost Index</th>
-			<th scope="col">Median Rent</th>
-			<th scope="col">Median Home</th>
-			<th scope="col">State Tax</th>
-			<th scope="col">Local Tax</th>
-			<th scope="col">Property Tax</th>
-			<th scope="col"></th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for each in Cities %}
-		<tr>
-			<th scope="row">{{ each['id'] }}</th>
-			<td>{{ each['City'] }}</td>
-			<td>{{ each['State'] }}</td>
-			<td>{% if each['Salary'] %}${{ each['Salary'] }}{% else %}{% endif %}</td>
-			<td>{% if each['Coli'] %}{{ each['Coli'] }}{% else %}{% endif %}</td>
-			<td>{% if each['Rent'] %}${{ each['Rent'] }}{% else %}{% endif %}</td>
-			<td>{% if each['Home'] %}${{ each['Home'] }}{% else %}{% endif %}</td>
-			<td>{% if each['StateTax'] %}{{ each['StateTax'] }}%{% else %}{% endif %}</td>
-			<td>{% if each['LocalTax'] %}{{ each['LocalTax'] }}%{% else %}{% endif %}</td>
-			<td>{% if each['PropertyTax'] %}{{ each['PropertyTax'] }}%{% else %}{% endif %}</td>
-			<td><a href="/editcity/{{ each['id'] }}" class="btn btn-outline-info btn-sm pull-right">Edit</a></td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
-<hr>
-
 {% if Flag %}
 <p>Nothing to display, try entering some cities first</p>
+{% else %}
+<div class="scrollme">
+	<table class="table table-responsive table-sm table-striped">
+		<thead>
+			<tr>
+				{% for colname in Cities[0].keys() %}
+				<th scope="col">{{ colname }}</th>
+				{% endfor %}
+				<th scope="col">Edit</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for city in Cities %}
+			<tr>
+				{% for key in city.keys() %}
+				<th scope="row">{{city[key]}}</th>
+				{% endfor %}
+				<td><a href="/editcity/{{city['id']}}" class="badge badge-info pull-right">Edit</a></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<hr>
 {% endif %}
 <a href="/addcity" class="badge badge-primary">Add City</a>
-
 {% endblock %}
