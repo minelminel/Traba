@@ -4,3 +4,8 @@ Jinja2
 Werkzeug
 sqlalchemy
 flask-sqlalchemy
+flask-api
+flask-restful
+WTForms
+passlib
+sqlalchemy-serializer

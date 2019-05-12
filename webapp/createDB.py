@@ -1,3 +1,4 @@
-from app import db
-db.create_all()
-print("[Done]")
+def CreateDB():
+	from app import db
+	db.create_all()
+	print("[DB created]")

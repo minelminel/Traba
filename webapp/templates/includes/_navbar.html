@@ -1,5 +1,5 @@
 <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light"> -->
-<nav class="navbar navbar-expand-lg navbar-light navbar-transparent">
+<nav class="navbar navbar-expand-lg navbar-light navbar-transparent navbar-fixed-top">
   <a class="navbar-brand" href="/">🧩 Traba </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -9,21 +9,20 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="/"><span class="oi oi-home" title="home" aria-hidden="true"></span> Home<span
-          class="sr-only">(current)</span></a>
+        <a class="nav-link mr-2" href="/"><span class="oi oi-home" title="home" aria-hidden="true"></span> Home<span
+            class="sr-only">(current)</span></a>
       </li>
-
+      <li class="nav navbar-nav navbar-right">
+        <a class="nav-link mr-2" href="/api"><span class="oi oi-code" title="code" aria-hidden="true"></span> API </a>
+      </li>
+      {% if session.logged_in %}
       <li class="nav-item">
-        <a class="nav-link" href="/dashboard"><span class="oi oi-dashboard" title="dashboard"
-            aria-hidden="true"></span> Dashboard</a>
+        <a class="nav-link mr-2" href="/dashboard"><span class="oi oi-dashboard" title="dashboard"
+            aria-hidden="true"></span>
+          Dashboard</a>
       </li>
-
-      <!-- <li class="nav-item">
-                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Login</a>
-            </li> -->
-
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a class="nav-link dropdown-toggle mr-2" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           <span class="oi oi-menu" title="menu" aria-hidden="true"></span> Menu</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -35,22 +34,36 @@
           <a class="dropdown-item" href="/jobs">Jobs</a>
           <a class="dropdown-item" href="/interactions">Interactions</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="/calendar"><span class="oi oi-calendar" title="calendar" aria-hidden="true"></span> Calendar</a>
+          <a class="dropdown-item" href="/calendar"><span class="oi oi-calendar" title="calendar"
+              aria-hidden="true"></span> Calendar</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="/settings"><span class="oi oi-cog" title="cog" aria-hidden="true"></span> Settings</a>
+          <a class="dropdown-item" href="/settings"><span class="oi oi-cog" title="cog" aria-hidden="true"></span>
+            Settings</a>
         </div>
       </li>
-
+     {% endif %}
     </ul>
-    <li class="nav navbar-nav navbar-right">
-      <a class="nav-link" href="/api"><span class="oi oi-code" title="code" aria-hidden="true"></span> API </a>
-    </li>
 
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit"><span class="oi oi-person" title="person"
-          aria-hidden="true"></span>Search</button>
-    </form>
+    {% if session.logged_in %}
+    <ul class="nav navbar-nav navbar-right">
+
+      <!-- Navbar Search Form -->
+      <form class="navbar-form form-inline my-2 my-lg-0" method="get" action="{{ url_for('search_results') }}">
+        <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search" required>
+        <button class="btn btn-outline-secondary btn-sm mr-4" type="submit"><span class="oi oi-magnifying-glass" title="search"
+            aria-hidden="true"></span>Search</button>
+
+            <a href="/logout" class="btn btn-sm btn-outline-secondary mr-2" role="button" aria-pressed="true">Logout</a>
+      </form>
+    </ul>
+    {% else %}
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/login" class="btn btn-sm btn-outline-secondary mr-4" role="button" aria-pressed="true">Login</a>
+      </li>
+      <li><a href="/register" class="btn btn-sm btn-outline-secondary mr-2" role="button"
+          aria-pressed="true">Register</a></li>
+    </ul>
+    {% endif %}
 
   </div>
 </nav>
