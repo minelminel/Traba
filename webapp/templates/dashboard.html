@@ -8,11 +8,35 @@
 <table>
 	<tr>
 		<td>
-			<h3>Hello, {{ session.username }}</h3>
+			<small>{{ now }}</small>
 		</td>
-		<td> ... </td>
+	</tr>
+	<tr>
 		<td>
-			<h6>{{ now }}</h6>
+			<h3>Hello, <i>{{ session.username }}</i></h3>
+		</td>
+		<td>
+			<div class="container-fluid">
+				<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+					<div class="btn-group mr-2" role="group" aria-label="First group">
+						<a class="btn btn-primary btn-sm" href="{{url_for('cities')}}" role="button">Cities</a>
+						<a class="btn btn-primary btn-sm" href="{{url_for('jobs')}}" role="button">Jobs</a>
+						<a class="btn btn-primary btn-sm" href="{{url_for('interactions')}}"
+							role="button">Interactions</a>
+					</div>
+					<div class="btn-group mr-2" role="group" aria-label="Second group">
+						<a class="btn btn-success btn-sm" href="{{url_for('addcity')}}" role="button">Add City</a>
+						<a class="btn btn-success btn-sm" href="{{url_for('addjob')}}" role="button">Add Job</a>
+						<a class="btn btn-success btn-sm" href="{{url_for('addinteraction')}}" role="button">Add
+							Interaction</a>
+					</div>
+					<div class="btn-group" role="group" aria-label="Third group">
+						<a class="btn btn-info btn-sm" href="{{url_for('calendar')}}" role="button">Calendar</a>
+						<a class="btn btn-info btn-sm" href="{{url_for('settings')}}" role="button">Settings</a>
+						<a class="btn btn-info btn-sm" href="" role="button">Profile</a>
+					</div>
+				</div>
+			</div>
 		</td>
 	</tr>
 </table>
@@ -20,41 +44,58 @@
 <hr>
 
 <div class="container-fluid">
-	<a href="/cities" class="badge badge-primary mr-2">Cities</a>
-	<a href="/jobs" class="badge badge-primary mr-2">Jobs</a>
-	<a href="/interactions" class="badge badge-primary mr-4">Interactions</a>
-	<!-- </div><div> -->
-	<a href="/addcity" class="badge badge-success mr-2">Add City</a>
-	<a href="/addjob" class="badge badge-success mr-2">Add Job</a>
-	<a href="/addinteraction" class="badge badge-success mr-4">Add Interaction</a>
-	<!-- </div><div> -->
-	<a href="/calendar" class="badge badge-info mr-2">Calendar</a>
-	<a href="/settings" class="badge badge-info mr-2">Settings</a>
-	<a href="#" class="badge badge-info mr-4">Profile</a>
-</div>
-<hr>
-<div class="container-fluid">
 	<table class="">
 		<tr>
 			<td>
 				<form action="{{url_for('reset_city')}}" method="post">
 					<input type="hidden" name="_method" value="DELETE">
-					<input type="submit" value="Reset City" class="btn btn-danger btn-sm mr-4">
+					<input type="submit" value="Reset Cities" class="btn btn-outline-danger btn-sm mr-2">
+					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 				</form>
 			</td>
 			<td>
 				<form action="{{url_for('reset_job')}}" method="post" disabled>
 					<input type="hidden" name="_method" value="DELETE">
-					<input type="submit" value="Reset Jobs" class="btn btn-danger btn-sm mr-4">
+					<input type="submit" value="Reset Jobs" class="btn btn-outline-danger btn-sm mr-2">
+					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 				</form>
 			</td>
 			<td>
 				<form action="{{url_for('reset_interaction')}}" method="post" disabled>
 					<input type="hidden" name="_method" value="DELETE">
-					<input type="submit" value="Reset Interactions" class="btn btn-danger btn-sm mr-2">
+					<input type="submit" value="Reset Interactions" class="btn btn-outline-danger btn-sm mr-2">
+					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+				</form>
+			</td>
+			<td>
+				<form action="{{url_for('reset_states')}}" method="post" disabled>
+					<input type="hidden" name="_method" value="DELETE">
+					<input type="submit" value="Reset States" class="btn btn-outline-danger btn-sm mr-2">
+					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 				</form>
 			</td>
 		</tr>
 	</table>
 </div>
+
+<hr>
+<table>
+	<tr>
+		<td>
+			<h3>Cities: {{ num_city }}</h3>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h3>Jobs: {{ num_job }}</h3>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h3>Interactions: {{ num_inter }}</h3>
+		</td>
+	</tr>
+</table>
+
+
 {% endblock %}

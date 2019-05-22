@@ -12,9 +12,10 @@
         <a class="nav-link mr-2" href="/"><span class="oi oi-home" title="home" aria-hidden="true"></span> Home<span
             class="sr-only">(current)</span></a>
       </li>
-      <li class="nav navbar-nav navbar-right">
-        <a class="nav-link mr-2" href="/api"><span class="oi oi-code" title="code" aria-hidden="true"></span> API </a>
-      </li>
+      <!-- <li class="nav navbar-nav navbar-right">
+        <a class="nav-link mr-2" href="/beta"><span class="oi oi-beaker" title="beaker" aria-hidden="true"></span> Beta
+        </a>
+      </li> -->
       {% if session.logged_in %}
       <li class="nav-item">
         <a class="nav-link mr-2" href="/dashboard"><span class="oi oi-dashboard" title="dashboard"
@@ -41,24 +42,38 @@
             Settings</a>
         </div>
       </li>
-     {% endif %}
+      {% endif %}
     </ul>
 
+    {% if session.logged_in %}
+    {% if session.is_admin %}
+    <li class="nav navbar-nav navbar-center">
+      <a class="nav-link mr-2" href="/admin"><span class="oi oi-shield" title="shield" aria-hidden="true"></span> Admin
+      </a>
+    </li>
+    {% endif %}
+    {% endif %}
+
+    <li class="nav navbar-nav navbar-right">
+      <a class="nav-link mr-2" href="/api"><span class="oi oi-terminal" title="terminal" aria-hidden="true"></span> API
+      </a>
+    </li>
     {% if session.logged_in %}
     <ul class="nav navbar-nav navbar-right">
 
       <!-- Navbar Search Form -->
       <form class="navbar-form form-inline my-2 my-lg-0" method="get" action="{{ url_for('search_results') }}">
-        <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search" required>
-        <button class="btn btn-outline-secondary btn-sm mr-4" type="submit"><span class="oi oi-magnifying-glass" title="search"
-            aria-hidden="true"></span>Search</button>
+        <input class="form-control mr-sm-2" name="search" type="search" placeholder="Search" aria-label="Search"
+          required>
+        <button class="btn btn-outline-secondary btn-sm mr-2" type="submit"><span class="oi oi-magnifying-glass"
+            title="search" aria-hidden="true"></span>Search</button>
 
-            <a href="/logout" class="btn btn-sm btn-outline-secondary mr-2" role="button" aria-pressed="true">Logout</a>
+        <a href="/logout" class="btn btn-sm btn-outline-secondary mr-2" role="button" aria-pressed="true">Logout</a>
       </form>
     </ul>
     {% else %}
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="/login" class="btn btn-sm btn-outline-secondary mr-4" role="button" aria-pressed="true">Login</a>
+      <li><a href="/login" class="btn btn-sm btn-outline-secondary mr-2" role="button" aria-pressed="true">Login</a>
       </li>
       <li><a href="/register" class="btn btn-sm btn-outline-secondary mr-2" role="button"
           aria-pressed="true">Register</a></li>

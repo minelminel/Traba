@@ -6,6 +6,7 @@
 
 {% from "includes/_formhelpers.html" import render_field %}
 <form action="" method="POST">
+	{{ form.csrf_token }}
 	<div class="form-group">
 		{{render_field(form.username, class_="form-control")}}
 	</div>
@@ -14,5 +15,14 @@
 	</div>
 	<p><input type="submit" class="btn btn-primary" value="Login"></p>
 </form>
+<a href={{ url_for('reset_request') }} class="">Forgot password?</a>
+<hr>
+<div class="text">
+	<small>
+		Need an account?
+		<a href={{ url_for('register') }} class="">Sign Up Now</a>
+	</small>
+</div>
+
 
 {% endblock %}

@@ -5,3 +5,4 @@ data/__pycache__/
 me/
 sandbox.py
 trabaDB.db
+.vscode/

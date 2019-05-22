@@ -1,0 +1,179 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h1>Admin Panel (logged in as <i>{{session['username']}}</i>)</h1>
+
+<hr>
+<!-- BUTTON TOOLBAR  -->
+<div class="container-fluid">
+	<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+		<div class="btn-group mr-2" role="group" aria-label="First group">
+			<a class="btn btn-primary btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-primary btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Second group">
+			<a class="btn btn-success btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-success btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Third group">
+			<a class="btn btn-info btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-info btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Fourth group">
+			<a class="btn btn-secondary btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-secondary btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Fifth group">
+			<a class="btn btn-warning btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-warning btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Sixth group">
+			<a class="btn btn-danger btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-danger btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Seventh group">
+			<a class="btn btn-light btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-light btn-sm" href="" role="button">Action</a>
+		</div>
+		<div class="btn-group mr-2" role="group" aria-label="Eighth group">
+			<a class="btn btn-dark btn-sm" href="" role="button">Action</a>
+			<a class="btn btn-dark btn-sm" href="" role="button">Action</a>
+		</div>
+	</div>
+</div>
+
+<hr>
+<!-- USER TABLE -->
+<h3>Users ({{_users|length}})</h3>
+<div class="container-fluid">
+	<table class="table table-sm table-striped table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Username</th>
+				<th scope="col">Name</th>
+				<th scope="col">Email</th>
+				<th scope="col">Confirmed</th>
+				<th scope="col">Admin</th>
+				<th scope="col">Created At</th>
+				<th scope="col">Modified At</th>
+				<th scope="col">API Token</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in _users %}
+			<tr>
+				<th scope="row">{{ user['id'] }}</th>
+				<td>{{ user['username'] }}</td>
+				<td>{{ user['name'] }}</td>
+				<td>{{ user['email'] }}</td>
+				<td>{{ user['confirmed'] }}</td>
+				{% if user['is_admin'] is sameas True %}
+				<td class="table-success">{{ user['is_admin'] }}</td>
+				{% else %}
+				<td>{{ user['is_admin'] }}</td>
+				{% endif %}
+				<td>{{ user['created_at'] }}</td>
+				<td>{{ user['modified_at'] }}</td>
+				<td>{{ user['apitoken'] }}</td>
+				<td>
+					<a href="" class="btn btn-outline-secondary btn-sm pull-right">Reset Token</a>
+					<a href="" class="btn btn-outline-info btn-sm pull-right">Edit</a>
+					<a href="" class="btn btn-outline-success btn-sm pull-right">Make Admin</a>
+					<a href="" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Username</th>
+				<th scope="col">Name</th>
+				<th scope="col">Email</th>
+				<th scope="col">Confirmed</th>
+				<th scope="col">Admin</th>
+				<th scope="col">Created At</th>
+				<th scope="col">Modified At</th>
+				<th scope="col">API Token</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</tfoot>
+	</table>
+</div>
+
+<hr>
+<!-- STATE TABLE -->
+<h3>States ({{_states|length}})</h3>
+<div class="container-fluid">
+	<table class="table table-sm table-striped table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">State</th>
+				<th scope="col">Abbreviation</th>
+				<th scope="col">Capital</th>
+				<th scope="col">Tax Free</th>
+				<th scope="col">Flat Tax</th>
+				<th scope="col">Tax Brackets</th>
+				<th scope="col">Low Rate</th>
+				<th scope="col">High Rate</th>
+				<th scope="col">Notes</th>
+				<th scope="col">Created At</th>
+				<th scope="col">Modified At</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		{% if _states|length > 0 %}
+		<tbody>
+			{% for state in _states %}
+			<tr>
+				<th scope="row">{{ state['id'] }}</th>
+				<td>{{ state['name'] }}</td>
+				<td>{{ state['abbreviation'] }}</td>
+				<td>{{ state['capital'] }}</td>
+				<td>{{ state['taxfree'] }}</td>
+				<td>{{ state['flattax'] }}</td>
+				<td>{{ state['taxbrackets'] }}</td>
+				<td>{{ state['lowrate'] }}</td>
+				<td>{{ state['highrate'] }}</td>
+				<td>{{ state['notes'] }}</td>
+				<td>{{ state['created_at'] }}</td>
+				<td>{{ state['modified_at'] }}</td>
+				<td>
+					<a href="" class="btn btn-outline-secondary btn-sm pull-right">Reset</a>
+					<a href="/edit/state/{{state['id']}}" class="btn btn-outline-info btn-sm pull-right">Edit</a>
+					<a href="" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">State</th>
+				<th scope="col">Abbreviation</th>
+				<th scope="col">Capital</th>
+				<th scope="col">Tax Free</th>
+				<th scope="col">Flat Tax</th>
+				<th scope="col">Tax Brackets</th>
+				<th scope="col">Low Rate</th>
+				<th scope="col">High Rate</th>
+				<th scope="col">Notes</th>
+				<th scope="col">Created At</th>
+				<th scope="col">Modified At</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</tfoot>
+		{% endif %}
+	</table>
+</div>
+
+<hr>
+<!-- REPORT TABLE -->
+<h3>Reports</h3>
+
+<hr>
+{% endblock %}
