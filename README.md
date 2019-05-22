@@ -2,7 +2,7 @@
 
 #### Upcoming features
 - edit job & city entries
-- allow user to create account
+- ~~allow user to create account
 - user controlled settings
 - user profile
 - ~~@is_logged_in
@@ -10,7 +10,7 @@
 - edit interactions
 - organized interaction history
 - set reminders for follow-ups and actions
-- user password reset
+- ~~user password reset
 - user email verification
 - calculate distance to each city
 - view cities/jobs on map
