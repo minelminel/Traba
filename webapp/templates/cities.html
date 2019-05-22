@@ -2,11 +2,12 @@
 {% block body %}
 <h1>Cities</h1>
 <hr>
+
 {% if Flag %}
 <p>Nothing to display, try entering some cities first</p>
 {% else %}
 <div class="scrollme">
-	<table class="table table-responsive table-sm table-striped">
+	<table id="dtBasicExample" class="table table-responsive table-sm table-striped">
 		<thead>
 			<tr>
 				{% for colname in Cities[0].keys() %}
@@ -18,16 +19,26 @@
 		<tbody>
 			{% for city in Cities %}
 			<tr>
+				<!-- <th scope="row">{{city['id']}}</th> -->
 				{% for key in city.keys() %}
-				<th scope="row">{{city[key]}}</th>
+				<td>{% if city[key] %}{{ city[key] }}{% else %}{% endif %}</td>
 				{% endfor %}
 				<td><a href="/editcity/{{city['id']}}" class="badge badge-info pull-right">Edit</a></td>
 			</tr>
 			{% endfor %}
 		</tbody>
+		<tfoot>
+				<tr>
+					{% for colname in Cities[0].keys() %}
+					<th scope="col">{{ colname }}</th>
+					{% endfor %}
+					<th scope="col">Edit</th>
+				</tr>
+			</tfoot>
 	</table>
 </div>
 <hr>
 {% endif %}
 <a href="/addcity" class="badge badge-primary">Add City</a>
+<hr>
 {% endblock %}
