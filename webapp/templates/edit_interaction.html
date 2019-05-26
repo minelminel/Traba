@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<div class="container h-100">
+	<div class="row h-100 justify-content-center align-items-center">
+		<div class="col col-md-8">
+			<h2>Edit Interaction</h2>
+			{% from "includes/_formhelpers.html" import render_field %}
+			<form method="POST" action="">
+				{{ form.csrf_token }}
+				<div class="form-group">
+					<div class="row">
+						{% for subfield in form.channel %}
+						<div class="col">
+							<td>{{ subfield }}</td>
+							<td>{{ subfield.label }}</td>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				<div class="form-group">
+					{{ render_field(form.company, class_="form-control") }}
+				</div>
+				<div class="form-group">
+					{{ render_field(form.summary, class_="form-control", id="editor") }}
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							{{ render_field(form.city, class_="form-control") }}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							{{ render_field(form.state, class_="form-control", id="selectfield") }}
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							{{ render_field(form.author, class_="form-control", readonly=True) }}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							{{ render_field(form.id, class_="form-control", readonly=True) }}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<p><input type="submit" class="btn btn-primary btn-block" value="Save"></p>
+					</div>
+					<div class="col">
+						<p><a href="{{ Back }}" class="btn btn-outline-info btn-block">Cancel</a></p>
+					</div>
+				</div>
+			</form>
+			<hr>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

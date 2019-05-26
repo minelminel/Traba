@@ -12,10 +12,10 @@
         <a class="nav-link mr-2" href="/"><span class="oi oi-home" title="home" aria-hidden="true"></span> Home<span
             class="sr-only">(current)</span></a>
       </li>
-      <!-- <li class="nav navbar-nav navbar-right">
-        <a class="nav-link mr-2" href="/beta"><span class="oi oi-beaker" title="beaker" aria-hidden="true"></span> Beta
+      <li class="nav navbar-nav navbar-right">
+        <a class="nav-link mr-2" href="/api"><span class="oi oi-code" title="code" aria-hidden="true"></span> API
         </a>
-      </li> -->
+      </li>
       {% if session.logged_in %}
       <li class="nav-item">
         <a class="nav-link mr-2" href="/dashboard"><span class="oi oi-dashboard" title="dashboard"
@@ -27,9 +27,11 @@
           aria-haspopup="true" aria-expanded="false">
           <span class="oi oi-menu" title="menu" aria-hidden="true"></span> Menu</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="/addcity">Add City</a>
-          <a class="dropdown-item" href="/addjob">Add Job</a>
-          <a class="dropdown-item" href="/addinteraction">Add Interaction</a>
+          <a class="dropdown-item" href="{{url_for('add_city')}}">Add City</a>
+          <a class="dropdown-item" href="{{url_for('add_job')}}">Add Job</a>
+          <a class="dropdown-item" href="{{url_for('add_interaction')}}">Add Interaction</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/states">States</a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="/cities">Cities</a>
           <a class="dropdown-item" href="/jobs">Jobs</a>
@@ -47,17 +49,13 @@
 
     {% if session.logged_in %}
     {% if session.is_admin %}
-    <li class="nav navbar-nav navbar-center">
+    <li class="nav navbar-nav navbar-right mr-2">
       <a class="nav-link mr-2" href="/admin"><span class="oi oi-shield" title="shield" aria-hidden="true"></span> Admin
       </a>
     </li>
     {% endif %}
     {% endif %}
 
-    <li class="nav navbar-nav navbar-right">
-      <a class="nav-link mr-2" href="/api"><span class="oi oi-terminal" title="terminal" aria-hidden="true"></span> API
-      </a>
-    </li>
     {% if session.logged_in %}
     <ul class="nav navbar-nav navbar-right">
 
@@ -73,9 +71,9 @@
     </ul>
     {% else %}
     <ul class="nav navbar-nav navbar-right">
-      <li><a href="/login" class="btn btn-sm btn-outline-secondary mr-2" role="button" aria-pressed="true">Login</a>
+      <li><a href="/login" class="btn btn-sm btn-outline-secondary mr-2 mb-2" role="button" aria-pressed="true">Login</a>
       </li>
-      <li><a href="/register" class="btn btn-sm btn-outline-secondary mr-2" role="button"
+      <li><a href="/register" class="btn btn-sm btn-outline-secondary mr-2 mb-2" role="button"
           aria-pressed="true">Register</a></li>
     </ul>
     {% endif %}

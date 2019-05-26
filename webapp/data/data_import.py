@@ -58,23 +58,32 @@ def loadCitiesEnMasse(debug=False):
 	print('Finished')
 
 
-def loadStatesEnMasse(debug=False):
+def loadStatesEnMasse(header_token,debug):
 	# for item in list: api_request(_data)
 	jsonPath = os.path.join(os.path.dirname(__file__),'stateNames.json')
 	jsonData = json.loads(open(jsonPath).read()) # <dict>
 	# pprint(jsonData)
 	# print(type(jsonData))
+	successes = 0
+	print('\t** LOADED DATA FROM FILE')
 	for each in jsonData:
 		if debug:
-			response = requests.get('http://localhost:5000/api/state',params=each)
+			response = requests.get('http://localhost:5000/api/state',
+									params=each,
+									headers={'Token': header_token})
+			pprint(each)
+			print({'Token': header_token})
+			print(response.json())
+			print('\n\t** GET')
 		else:
-			response = requests.post('http://localhost:5000/api/state',params=each)
-		print(response.json())
+			response = requests.post('http://localhost:5000/api/state',
+									params=each,
+									headers={'Token': header_token})
+			print('\n\t** POST')
 		print(response.status_code)
-		# sleep(0.1)
-	print('Finished')
+		if response.status_code == 200:
+			successes += 1
+	return successes, len(jsonData)
 
 
-if __name__ == "__main__":
-	# loadCitiesEnMasse(debug=True)
-	loadStatesEnMasse(debug=False)
+

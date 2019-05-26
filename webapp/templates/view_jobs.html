@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<h2>Jobs ({{_data|length}})</h2>
+<hr>
+
+{% if _data|length is sameas 0 %}
+<p>Nothing to display, try adding some jobs first</p>
+{% else %}
+
+<table class="table table-sm table-striped table-bordered">
+	<thead>
+		<tr>
+			<th scope="col">Position</th>
+			<th scope="col">Level</th>
+			<th scope="col">Company</th>
+			<th scope="col">Salary</th>
+			<th scope="col">Type</th>
+			<th scope="col">City</th>
+			<th scope="col">State</th>
+			<th scope="col">Link</th>
+			<th scope="col">HR Contact</th>
+			<th scope="col">HR Title</th>
+			<th scope="col">Phone #</th>
+			<th scope="col">Email</th>
+			<th scope="col">Description</th>
+			<th scope="col">Experience</th>
+			<th scope="col">Notes</th>
+			<th scope="col">Created At</th>
+			<th scope="col">Modified At</th>
+			<th scope="col">Action</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for each in _data %}
+		<tr>
+			<td>{{ each['position'] }}</td>
+			<td>{{ each['level'] }}</td>
+			<td>{{ each['company'] }}</td>
+			<td>$ {{ each['salary'] }}</td>
+			<td>{{ each['cotype'] }}</td>
+			<td>{{ each['city'] }}</td>
+			<td>{{ each['state'] }}</td>
+			<td>{{ each['link'] }}</td>
+			<td>{{ each['contact'] }}</td>
+			<td>{{ each['hrtitle'] }}</td>
+			<td>{{ each['phone'] }}</td>
+			<td>{{ each['email'] }}</td>
+			<td class="text-truncate" style="max-width: 150px;">{{ each['description'] }}</td>
+			<td class="text-truncate" style="max-width: 150px;">{{ each['experience'] }}</td>
+			<td class="text-truncate" style="max-width: 150px;">{{ each['notes'] }}</td>
+			<td class="text-truncate" style="max-width: 50px;">{{ each['created_at'] }}</td>
+			<td class="text-truncate" style="max-width: 50px;">{{ each['modified_at'] }}</td>
+			<td>
+				<a href="/detail/job/{{ each['id'] }}" class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
+				<a href="/edit/job/{{ each['id'] }}" class="btn btn-outline-info btn-sm pull-right">Edit</a>
+				<a href="/delete/job/{{ each['id'] }}" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th scope="col">Position</th>
+			<th scope="col">Level</th>
+			<th scope="col">Company</th>
+			<th scope="col">Salary</th>
+			<th scope="col">Type</th>
+			<th scope="col">City</th>
+			<th scope="col">State</th>
+			<th scope="col">Link</th>
+			<th scope="col">HR Contact</th>
+			<th scope="col">HR Title</th>
+			<th scope="col">Phone #</th>
+			<th scope="col">Email</th>
+			<th scope="col">Description</th>
+			<th scope="col">Experience</th>
+			<th scope="col">Notes</th>
+			<th scope="col">Created At</th>
+			<th scope="col">Modified At</th>
+			<th scope="col">Action</th>
+		</tr>
+	</tfoot>
+</table>
+<hr>
+
+{% endif %}
+
+<a href="{{url_for('add_job')}}" class="badge badge-primary">Add Job</a>
+<hr>
+{% endblock %}

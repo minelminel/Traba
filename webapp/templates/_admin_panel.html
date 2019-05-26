@@ -1,0 +1,556 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<!-- MODAL -->
+<script>
+	$('#modalContactForm').on('shown.bs.modal', function () {
+		$(document).off('focusin.modal');
+	});
+</script>
+
+<script>
+	$(function () {
+		$('body').on('click', '.odom-submit', function (e) {
+			$(this.form).submit();
+			$('#modalContactForm').modal('hide');
+		});
+	});
+
+</script>
+<div class="modal fade" id="modalContactForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	aria-hidden="true" data-backdrop="false">
+	<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header text-center">
+				<h4 class="modal-title w-100 font-weight-bold">Email All Users</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body mx-3">
+
+				<div class="md-form mb-5">
+					<i class="fas fa-tag prefix grey-text"></i>
+					<label data-error="wrong" data-success="right" for="form32"><small>Subject</small></label>
+					<input type="text" id="formsubject" class="form-control validate">
+				</div>
+
+				<div class="md-form">
+					<i class="fas fa-pencil prefix grey-text"></i>
+					<label data-error="wrong" data-success="right" for="form8"><small>Body</small></label>
+					<textarea type="text" id="formbody" class="md-textarea form-control" rows="4"></textarea>
+				</div>
+
+			</div>
+			<div class="modal-footer d-flex justify-content-center">
+				<button class="btn btn-primary btn-block odom-submit"
+					onclick="event.preventDefault();document.getElementById('modalContactForm').submit();">Send<i
+						class="fas fa-paper-plane-o ml-1"></i></button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- START OF PAGE -->
+<h2>Admin Panel (logged in as <i>{{session['username']}}</i>)</h2>
+<hr>
+
+<div class="container-fluid">
+	<div class="row">
+
+		<div class="col col-md-1">
+			<!-- REAL BUTTON TOOLBAR  -->
+			<h5>Actions</h5>
+			<hr>
+			<div><small>Message</small></div>
+			<a href="" class="btn btn-primary btn-sm mb-2 btn-block" data-toggle="modal" data-target="#modalContactForm">Email
+				All
+				Users</a>
+			<div></div>
+			<div><small>Load</small></div>
+			<form action="{{url_for('load_states')}}" method="post">
+				<input type="hidden" name="_method" value="LOAD">
+				<input type="submit" value="Load States" class="btn btn-dark btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<div><small>Add</small></div>
+			<form action="{{url_for('add_state')}}" method="get">
+				<input type="hidden" name="_method" value="ADD">
+				<input type="submit" value="Add State" class="btn btn-secondary btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('add_city')}}" method="get">
+				<input type="hidden" name="_method" value="ADD">
+				<input type="submit" value="Add City" class="btn btn-secondary btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('add_job')}}" method="get">
+				<input type="hidden" name="_method" value="ADD">
+				<input type="submit" value="Add Job" class="btn btn-secondary btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('add_interaction')}}" method="get">
+				<input type="hidden" name="_method" value="ADD">
+				<input type="submit" value="Add Interaction" class="btn btn-secondary btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<div><small>Export</small></div>
+			<form action="{{url_for('export_states')}}" method="get">
+				<input type="hidden" name="_method" value="EXPORT">
+				<input type="submit" value="Export States" class="btn btn-warning btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('export_cities')}}" method="get">
+				<input type="hidden" name="_method" value="EXPORT">
+				<input type="submit" value="Export Cities" class="btn btn-warning btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('export_jobs')}}" method="get">
+				<input type="hidden" name="_method" value="EXPORT">
+				<input type="submit" value="Export Jobs" class="btn btn-warning btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('export_interactions')}}" method="get">
+				<input type="hidden" name="_method" value="EXPORT">
+				<input type="submit" value="Export Interactions" class="btn btn-warning btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('export_users')}}" method="get">
+				<input type="hidden" name="_method" value="EXPORT">
+				<input type="submit" value="Export Users" class="btn btn-warning btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<div><small>Reset</small></div>
+			<form action="{{url_for('reset_states')}}" method="post">
+				<input type="hidden" name="_method" value="RESET">
+				<input type="submit" value="Reset States" class="btn btn-danger btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('reset_city')}}" method="post">
+				<input type="hidden" name="_method" value="RESET">
+				<input type="submit" value="Reset Cities" class="btn btn-danger btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('reset_job')}}" method="post">
+				<input type="hidden" name="_method" value="RESET">
+				<input type="submit" value="Reset Jobs" class="btn btn-danger btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('reset_interaction')}}" method="post">
+				<input type="hidden" name="_method" value="RESET">
+				<input type="submit" value="Reset Interactions" class="btn btn-danger btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<div></div>
+			<form action="{{url_for('reset_user')}}" method="post">
+				<input type="hidden" name="_method" value="RESET">
+				<input type="submit" value="Reset Users" class="btn btn-danger btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+		</div>
+
+		<div class="col  col-md-11">
+			<!-- USER TABLE -->
+			<h5>Users ({{_users|length}})</h5>
+			<div class="container-fluid">
+				<div class="table-wrapper-scroll-y my-custom-scrollbar">
+					<table class="table table-sm table-striped table-bordered">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Username</th>
+								<th scope="col">Name</th>
+								<th scope="col">Email</th>
+								<th scope="col">Confirmed</th>
+								<th scope="col">Admin</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">API Token</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for user in _users %}
+							<tr>
+								<th scope="row">{{ user['id'] }}</th>
+								<td>{{ user['username'] }}</td>
+								<td>{{ user['name'] }}</td>
+								<td>{{ user['email'] }}</td>
+								<td>{{ user['confirmed'] }}</td>
+								{% if user['is_admin'] is sameas True %}
+								<td class="table-success">{{ user['is_admin'] }}</td>
+								{% else %}
+								<td class="table-danger">{{ user['is_admin'] }}</td>
+								{% endif %}
+								<td class="text-truncate" style="max-width: 150px;">{{ user['created_at'] }}</td>
+								<td class="text-truncate" style="max-width: 150px;">{{ user['modified_at'] }}</td>
+								<td>{{ user['apitoken'] }}</td>
+								<td>
+									<a href="" class="btn btn-outline-primary btn-sm pull-right">Email</a>
+									<a href="" class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
+									<a href="" class="btn btn-outline-info btn-sm pull-right">Edit</a>
+									<a href="" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Username</th>
+								<th scope="col">Name</th>
+								<th scope="col">Email</th>
+								<th scope="col">Confirmed</th>
+								<th scope="col">Admin</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">API Token</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+
+			<hr>
+			<!-- STATE TABLE -->
+			<h5>States ({{_states|length}})</h5>
+			<div class="container-fluid">
+				<div class="table-wrapper-scroll-y my-custom-scrollbar">
+					<table class="table table-sm table-striped table-bordered">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Author</th>
+								<th scope="col">State</th>
+								<th scope="col">Abbreviation</th>
+								<th scope="col">Capital</th>
+								<th scope="col">Tax Free</th>
+								<th scope="col">Flat Tax</th>
+								<th scope="col">Tax Brackets</th>
+								<th scope="col">Low Rate</th>
+								<th scope="col">High Rate</th>
+								<th scope="col">Notes</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</thead>
+						{% if _states|length > 0 %}
+						<tbody>
+							{% for state in _states %}
+							<tr>
+								<th scope="row">{{ state['id'] }}</th>
+								<td>{{ state['author'] }}</td>
+								<td>{{ state['name'] }}</td>
+								<td>{{ state['abbreviation'] }}</td>
+								<td>{{ state['capital'] }}</td>
+								{% if state['taxfree'] is sameas True %}
+								<td class="table-primary">{{ state['taxfree'] }}</td>
+								{% else %}
+								<td>{{ state['taxfree'] }}</td>
+								{% endif %}
+
+								{% if state['flattax'] is sameas True %}
+								<td class="table-primary">{{ state['flattax'] }}</td>
+								{% else %}
+								<td>{{ state['flattax'] }}</td>
+								{% endif %}
+
+								<td>{{ state['taxbrackets'] }}</td>
+								<td>{{ state['lowrate'] }}</td>
+								<td>{{ state['highrate'] }}</td>
+								<td class="text-truncate" style="max-width: 150px;">{{ state['notes'] }}</td>
+								<td class="text-truncate" style="max-width: 50px;">{{ state['created_at'] }}</td>
+								<td class="text-truncate" style="max-width: 50px;">{{ state['modified_at'] }}</td>
+								<td>
+									<a href="/detail/state/{{state['id']}}"
+										class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
+									<a href="/edit/state/{{state['id']}}"
+										class="btn btn-outline-info btn-sm pull-right">Edit</a>
+									<a href="/delete/state/{{state['id']}}" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Author</th>
+								<th scope="col">State</th>
+								<th scope="col">Abbreviation</th>
+								<th scope="col">Capital</th>
+								<th scope="col">Tax Free</th>
+								<th scope="col">Flat Tax</th>
+								<th scope="col">Tax Brackets</th>
+								<th scope="col">Low Rate</th>
+								<th scope="col">High Rate</th>
+								<th scope="col">Notes</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</tfoot>
+						{% endif %}
+					</table>
+				</div>
+			</div>
+
+			<hr>
+			<!-- CITY TABLE -->
+			<h5>Cities ({{_cities|length}})</h5>
+			<div class="container-fluid">
+				<div class="table-wrapper-scroll-y my-custom-scrollbar">
+					<table class="table table-sm table-striped table-bordered">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Author</th>
+								<th scope="col">City</th>
+								<th scope="col">State</th>
+								<th scope="col">PPI</th>
+								<th scope="col">SI</th>
+								<th scope="col">HCI</th>
+								<th scope="col">CI</th>
+								<th scope="col">COLI</th>
+								<th scope="col">PP2IR</th>
+								<th scope="col">TCTI</th>
+								<th scope="col">PI</th>
+								<th scope="col">QS</th>
+								<th scope="col">Notes</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</thead>
+						{% if _cities|length > 0 %}
+						<tbody>
+							{% for city in _cities %}
+							<tr>
+								<th scope="row">{{ city['id'] }}</th>
+								<td>{{ city['author'] }}</td>
+								<td>{{ city['city'] }}</td>
+								<td>{{ city['state'] }}</td>
+								<td>{{ city['purchasing_power_index'] }}</td>
+								<td>{{ city['safety_index'] }}</td>
+								<td>{{ city['health_care_index'] }}</td>
+								<td>{{ city['climate_index'] }}</td>
+								<td>{{ city['cost_of_living_index'] }}</td>
+								<td>{{ city['property_price_to_income_ratio'] }}</td>
+								<td>{{ city['traffic_commute_time_index'] }}</td>
+								<td>{{ city['pollution_index'] }}</td>
+								<td>{{ city['quality_sum'] }}</td>
+								<td class="text-truncate" style="max-width: 150px;">{{ city['notes'] }}</td>
+								<td class="text-truncate" style="max-width: 50px;">{{ city['created_at'] }}</td>
+								<td class="text-truncate" style="max-width: 50px;">{{ city['modified_at'] }}</td>
+								<td>
+									<a href="/detail/city/{{city['id']}}"
+										class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
+									<a href="/edit/city/{{city['id']}}"
+										class="btn btn-outline-info btn-sm pull-right">Edit</a>
+									<a href="/delete/city/{{ city['id'] }}" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Author</th>
+								<th scope="col">City</th>
+								<th scope="col">State</th>
+								<th scope="col">PPI</th>
+								<th scope="col">SI</th>
+								<th scope="col">HCI</th>
+								<th scope="col">CI</th>
+								<th scope="col">COLI</th>
+								<th scope="col">PP2IR</th>
+								<th scope="col">TCTI</th>
+								<th scope="col">PI</th>
+								<th scope="col">QS</th>
+								<th scope="col">Notes</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">Actions</th>
+							</tr>
+						</tfoot>
+						{% endif %}
+					</table>
+				</div>
+			</div>
+
+			<hr>
+			<!-- JOB TABLE -->
+			<h5>Jobs ({{_jobs|length}})</h5>
+			<div class="container-fluid">
+				<div class="table-wrapper-scroll-y my-custom-scrollbar">
+					<table class="table table-sm table-striped table-bordered">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Author</th>
+								<th scope="col">Position</th>
+								<th scope="col">Level</th>
+								<th scope="col">Company</th>
+								<th scope="col">Salary</th>
+								<th scope="col">Type</th>
+								<th scope="col">City</th>
+								<th scope="col">State</th>
+								<th scope="col">Link</th>
+								<th scope="col">HR Contact</th>
+								<th scope="col">HR Title</th>
+								<th scope="col">Phone #</th>
+								<th scope="col">Email</th>
+								<th scope="col">Description</th>
+								<th scope="col">Experience</th>
+								<th scope="col">Notes</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">Action</th>
+							</tr>
+						</thead>
+						{% if _jobs|length > 0 %}
+						<tbody>
+							{% for job in _jobs %}
+							<tr>
+								<th scope="row">{{ job['id'] }}</th>
+								<td>{{ job['author'] }}</td>
+								<td>{{ job['position'] }}</td>
+								<td>{{ job['level'] }}</td>
+								<td>{{ job['company'] }}</td>
+								<td>$ {{ job['salary'] }}</td>
+								<td>{{ job['cotype'] }}</td>
+								<td>{{ job['city'] }}</td>
+								<td>{{ job['state'] }}</td>
+								<td>{{ job['link'] }}</td>
+								<td>{{ job['contact'] }}</td>
+								<td>{{ job['hrtitle'] }}</td>
+								<td>{{ job['phone'] }}</td>
+								<td>{{ job['email'] }}</td>
+								<td class="text-truncate" style="max-width: 150px;">{{ job['description'] }}</td>
+								<td class="text-truncate" style="max-width: 150px;">{{ job['experience'] }}</td>
+								<td class="text-truncate" style="max-width: 150px;">{{ job['notes'] }}</td>
+								<td class="text-truncate" style="max-width: 50px;">{{ job['created_at'] }}</td>
+								<td class="text-truncate" style="max-width: 50px;">{{ job['modified_at'] }}</td>
+								<td>
+									<a href="/detail/job/{{ job['id'] }}"
+										class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
+									<a href="/edit/job/{{ job['id'] }}"
+										class="btn btn-outline-info btn-sm pull-right">Edit</a>
+									<a href="/delete/job/{{ job['id'] }}"
+										class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Author</th>
+								<th scope="col">Position</th>
+								<th scope="col">Level</th>
+								<th scope="col">Company</th>
+								<th scope="col">Salary</th>
+								<th scope="col">Type</th>
+								<th scope="col">City</th>
+								<th scope="col">State</th>
+								<th scope="col">Link</th>
+								<th scope="col">HR Contact</th>
+								<th scope="col">HR Title</th>
+								<th scope="col">Phone #</th>
+								<th scope="col">Email</th>
+								<th scope="col">Description</th>
+								<th scope="col">Experience</th>
+								<th scope="col">Notes</th>
+								<th scope="col">Created At</th>
+								<th scope="col">Modified At</th>
+								<th scope="col">Action</th>
+							</tr>
+						</tfoot>
+						{% endif %}
+					</table>
+				</div>
+			</div>
+
+			<hr>
+			<!-- INTERACTION TABLE -->
+			<h5>Interactions ({{_interactions|length}})</h5>
+			<div class="container-fluid">
+				<div class="table-wrapper-scroll-y my-custom-scrollbar">
+					<table class="table table-sm table-striped table-bordered">
+						<table class="table table-sm table-striped table-bordered">
+							<thead>
+								<tr>
+									<th scope="col">#</th>
+									<th scope="col">Author</th>
+									<th scope="col">Channel</th>
+									<th scope="col">Company</th>
+									<th scope="col">Summary</th>
+									<th scope="col">City</th>
+									<th scope="col">State</th>
+									<th scope="col">Created At</th>
+									<th scope="col">Modified At</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							{% if _interactions|length > 0 %}
+							<tbody>
+								{% for each in _interactions %}
+								<tr>
+									<th scope="row">{{ each['id'] }}</th>
+									<td>{{ each['author'] }}</td>
+									<td>{{ each['channel'] }}</td>
+									<td>{{ each['company'] }}</td>
+									<td class="text-truncate" style="max-width: 150px;">{{ each['summary'] }}</td>
+									<td>{{ each['city'] }}</td>
+									<td>{{ each['state'] }}</td>
+									<td class="text-truncate" style="max-width: 50px;">{{ each['created_at'] }}</td>
+									<td class="text-truncate" style="max-width: 50px;">{{ each['modified_at'] }}</td>
+									<td>
+										<a href="/detail/interaction/{{ each['id'] }}"
+											class="btn btn-outline-secondary btn-sm">Detail</a>
+										<a href="/edit/interaction/{{ each['id'] }}"
+											class="btn btn-outline-info btn-sm">Edit</a>
+										<a href="/delete/interaction/{{ each['id'] }}"
+											class="btn btn-outline-danger btn-sm">Delete</a>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+							<tfoot>
+								<tr>
+									<th scope="col">#</th>
+									<th scope="col">Author</th>
+									<th scope="col">Channel</th>
+									<th scope="col">Company</th>
+									<th scope="col">Summary</th>
+									<th scope="col">City</th>
+									<th scope="col">State</th>
+									<th scope="col">Created At</th>
+									<th scope="col">Modified At</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</tfoot>
+							{% endif %}
+						</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<hr>
+{% endblock %}

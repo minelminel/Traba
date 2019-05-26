@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+
+<!-- STATE TABLE -->
+<h2>States ({{_states|length}})</h2>
+<div class="container-fluid">
+	<table class="table table-sm table-striped table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">State</th>
+				<th scope="col">Abbreviation</th>
+				<th scope="col">Capital</th>
+				<th scope="col">Tax Free</th>
+				<th scope="col">Flat Tax</th>
+				<th scope="col">Tax Brackets</th>
+				<th scope="col">Low Rate</th>
+				<th scope="col">High Rate</th>
+				<th scope="col">Notes</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		{% if _states|length > 0 %}
+		<tbody>
+			{% for state in _states %}
+			<tr>
+				<th scope="row">{{ state['name'] }}</th>
+				<td>{{ state['abbreviation'] }}</td>
+				<td>{{ state['capital'] }}</td>
+
+				{% if state['taxfree'] is sameas True %}
+				<td class="table-primary">{{ state['taxfree'] }}</td>
+				{% else %}
+				<td>{{ state['taxfree'] }}</td>
+				{% endif %}
+
+				{% if state['flattax'] is sameas True %}
+				<td class="table-primary">{{ state['flattax'] }}</td>
+				{% else %}
+				<td>{{ state['flattax'] }}</td>
+				{% endif %}
+
+				<td>{{ state['taxbrackets'] }}</td>
+				<td>{{ state['lowrate'] }}</td>
+				<td>{{ state['highrate'] }}</td>
+				<td class="text-truncate" style="max-width: 150px;">{{ state['notes'] }}</td>
+				<td><a href="/detail/state/{{state['id']}}" class="btn btn-outline-secondary btn-sm pull-right">Detail</a></td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th scope="col">State</th>
+				<th scope="col">Abbreviation</th>
+				<th scope="col">Capital</th>
+				<th scope="col">Tax Free</th>
+				<th scope="col">Flat Tax</th>
+				<th scope="col">Tax Brackets</th>
+				<th scope="col">Low Rate</th>
+				<th scope="col">High Rate</th>
+				<th scope="col">Notes</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</tfoot>
+		{% else %}
+		<p>No States available</p>
+		{% endif %}
+	</table>
+</div>
+<hr>
+{% endblock %}

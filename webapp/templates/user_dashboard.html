@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Dashboard</h2>
+<hr>
+
+<table>
+	<tr>
+		<td>
+			<small>{{ now }}</small>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h3>Welcome back, <i>{{ session.username }}</i></h3>
+		</td>
+		<td>
+			<div class="container-fluid">
+				<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+					<div class="btn-group mr-2" role="group" aria-label="First group">
+						<a class="btn btn-primary btn-sm" href="{{url_for('view_states')}}" role="button">States</a>
+						<a class="btn btn-primary btn-sm" href="{{url_for('cities')}}" role="button">Cities</a>
+						<a class="btn btn-primary btn-sm" href="{{url_for('jobs')}}" role="button">Jobs</a>
+						<a class="btn btn-primary btn-sm" href="{{url_for('interactions')}}"
+							role="button">Interactions</a>
+					</div>
+					<div class="btn-group mr-2" role="group" aria-label="Second group">
+						<a class="btn btn-success btn-sm" href="{{url_for('add_city')}}" role="button">Add City</a>
+						<a class="btn btn-success btn-sm" href="{{url_for('add_job')}}" role="button">Add Job</a>
+						<a class="btn btn-success btn-sm" href="{{url_for('add_interaction')}}" role="button">Add
+							Interaction</a>
+					</div>
+					<div class="btn-group" role="group" aria-label="Third group">
+						<a class="btn btn-info btn-sm disabled" href="{{url_for('calendar')}}" role="button">Calendar</a>
+						<a class="btn btn-info btn-sm" href="{{url_for('settings')}}" role="button">Settings</a>
+						<a class="btn btn-info btn-sm disabled" href="" role="button">Profile</a>
+					</div>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<hr>
+<table>
+	<tr>
+		<td>
+			<h3>Cities: {{ num_city }}</h3>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h3>Jobs: {{ num_job }}</h3>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<h3>Interactions: {{ num_inter }}</h3>
+		</td>
+	</tr>
+</table>
+
+
+{% endblock %}

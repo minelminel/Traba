@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="container h-100">
+	<div class="row h-100 justify-content-center align-items-center">
+		<div class="col col-md-12">
+			<h2>Edit City</h2>
+
+			{% from "includes/_formhelpers.html" import render_field %}
+			<form method="POST" action="">
+				<!-- <p><a href="{{ Back }}" class="btn btn-info btn-block">Go Back</a></p> -->
+				{{ form.csrf_token }}
+				<div class="form-row">
+					<div class="form-group col">
+						{{ render_field(form.city, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.state, class_="form-control") }}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						{{ render_field(form.purchasing_power_index, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.safety_index, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.health_care_index, class_="form-control") }}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						{{ render_field(form.climate_index, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.cost_of_living_index, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.property_price_to_income_ratio, class_="form-control") }}
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						{{ render_field(form.traffic_commute_time_index, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.pollution_index, class_="form-control") }}
+					</div>
+					<div class="form-group col">
+						{{ render_field(form.quality_sum, class_="form-control") }}
+					</div>
+				</div>
+				<div class="form-group">
+					{{ render_field(form.notes, class_="form-control") }}
+				</div>
+				<div class="row">
+					<div class="col">
+						<div class="form-group">
+							{{ render_field(form.id, class_="form-control", readonly=True) }}
+						</div>
+					</div>
+					<div class="col">
+						<div class="form-group">
+							{{ render_field(form.author, class_="form-control", readonly=True) }}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<p><input type="submit" class="btn btn-primary btn-block" value="Save"></p>
+					</div>
+					<div class="col">
+						<p><a href="{{ Back }}" class="btn btn-outline-info btn-block">Cancel</a></p>
+					</div>
+				</div>
+			</form>
+			<hr>
+		</div>
+	</div>
+</div>
+
+
+{% endblock %}

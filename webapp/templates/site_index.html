@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<div class="jumbotron">
+	<h1 class="display-4 text-center">Welcome to Traba</h1>
+	<p class="lead text-center">Making sense of the modern job hunt</p>
+	<hr class="my-4">
+	<div class="text-center">
+		<ul>Save job postings, company locations, and employer details</ul>
+		<ul>Compare cities by cost of living, salaries, and other factors</ul>
+		<ul>Record interactions with recruiters, schedule interviews, and store notes</ul>
+	</div>
+
+	<div class="container">
+		<div class="row">
+			{% if session.logged_in %}
+			<div class="col text-center">
+				<a class="btn btn-primary btn-lg" href="/dashboard" role="button">Dashboard</a>
+			</div>
+			{% else %}
+			<div class="col text-center">
+				<a class="btn btn-primary btn-lg mr-2" href="/register" role="button">Get Started</a>
+				<a class="btn btn-primary btn-lg ml-2" href="/login" role="button">Login</a>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="media">
+				<img class="img-thumbnail mr-4"
+					src="http://radiogorgeous.com/content/uploads/2018/01/teresa-walton-headshot-radio-josephine-2-sm-200x200.jpg"
+					alt="Generic placeholder image">
+				<div class="media-body">
+					<h5 class="mt-0">"People use this shit? OK"</h5>
+					<p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
+						purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi
+						vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+				</div>
+			</div>
+		</div>
+		<div></div>
+		<div class="col">
+			<div class="media">
+				<img class="img-thumbnail mr-4"
+					src="https://mnsearch.org/wp-content/uploads/2017/06/Max-Prin-Headshot-200.jpg"
+					alt="Generic placeholder image">
+				<div class="media-body">
+					<h5 class="mt-0">"They paid me $11 to write this"</h5>
+					<p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
+						purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi
+						vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<hr>
+
+<div class="container align-self-center mt-auto">
+	<div class="row">
+
+		<div class="col text-center">
+			<a href="https://www.glassdoor.com" title="">
+				<img src="https://d25hn4jiqx5f7l.cloudfront.net/companies/logos/original/glassdoor_1501177651.png?1501177651"
+					class="img-responsive" style="max-width: 40px;"></a>
+			<div class="text-muted"><small>Glassdoor</small></div>
+
+		</div>
+		<div class="col text-center">
+			<a href="https://www.linkedin.com" title="">
+				<img src="https://pngimg.com/uploads/linkedIn/linkedIn_PNG9.png" class="img-responsive"
+					style="max-width: 40px;"></a>
+			<div class="text-muted"><small>LinkedIn</small></div>
+
+		</div>
+		<div class="col text-center">
+			<a href="https://www.indeed.com" title="">
+				<img src="https://lh3.googleusercontent.com/H0pHyu8AVpjvQIP6NrSdU0JMEZBnEQ2PO3exWnvR1qckMGJDwhekt-dWKFjWbZlQl4I"
+					class="img-responsive" style="max-width: 40px;"></a>
+			<div class="text-muted"><small>Indeed</small></div>
+
+		</div>
+		<div class="col text-center">
+			<a href="https://www.monster.com" title="">
+				<img src="https://media.newjobs.com/global/img/jobr/monster-app-logo.png" class="img-responsive"
+					style="max-width: 40px;"></a>
+			<div class="text-muted"><small>Monster</small></div>
+
+		</div>
+		<div class="col text-center">
+			<a href="http://www.careerbuilder.com" title="">
+				<img src="http://we-mobi.com/wp-content/uploads/2014/10/com_careerbuilder_SugarDrone.png"
+					class="img-responsive" style="max-width: 40px;"></a>
+			<div class="text-muted"><small>CareerBuilder</small></div>
+
+		</div>
+	</div>
+</div>
+
+<hr>
+{% endblock %}

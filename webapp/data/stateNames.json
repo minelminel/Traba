@@ -1,238 +1,592 @@
 [
     {
         "name": "Alabama",
-        "abbreviation": "AL"
+        "abbreviation": "AL",
+        "capital": "Montgomery",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "3",
+        "lowrate": "2.00",
+        "highrate": "5.00"
     },
     {
         "name": "Alaska",
-        "abbreviation": "AK"
+        "abbreviation": "AK",
+        "capital": "Juneau",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     },
     {
         "name": "American Samoa",
-        "abbreviation": "AS"
+        "abbreviation": "AS",
+        "capital": "Pago Pago",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Arizona",
-        "abbreviation": "AZ"
+        "abbreviation": "AZ",
+        "capital": "Phoenix",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "5",
+        "lowrate": "2.59",
+        "highrate": "4.54"
     },
     {
         "name": "Arkansas",
-        "abbreviation": "AR"
+        "abbreviation": "AR",
+        "capital": "Little Rock",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "6",
+        "lowrate": "0.90",
+        "highrate": "6.90"
     },
     {
         "name": "California",
-        "abbreviation": "CA"
+        "abbreviation": "CA",
+        "capital": "Sacremento",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "10",
+        "lowrate": "1.00",
+        "highrate": "13.30"
     },
     {
         "name": "Colorado",
-        "abbreviation": "CO"
+        "abbreviation": "CO",
+        "capital": "Denver",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "4.63",
+        "highrate": "4.63"
     },
     {
         "name": "Connecticut",
-        "abbreviation": "CT"
+        "abbreviation": "CT",
+        "capital": "Hartford",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "7",
+        "lowrate": "3.00",
+        "highrate": "6.99"
     },
     {
         "name": "Delaware",
-        "abbreviation": "DE"
+        "abbreviation": "DE",
+        "capital": "Dover",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "6",
+        "lowrate": "2.20",
+        "highrate": "6.60"
     },
     {
         "name": "District Of Columbia",
-        "abbreviation": "DC"
+        "abbreviation": "DC",
+        "capital": "",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "6",
+        "lowrate": "4.00",
+        "highrate": "8.95"
     },
     {
         "name": "Federated States Of Micronesia",
-        "abbreviation": "FM"
+        "abbreviation": "FM",
+        "capital": "Palikir",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Florida",
-        "abbreviation": "FL"
+        "abbreviation": "FL",
+        "capital": "Tallahassee",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     },
     {
         "name": "Georgia",
-        "abbreviation": "GA"
+        "abbreviation": "GA",
+        "capital": "Atlanta",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "6",
+        "lowrate": "1.00",
+        "highrate": "5.75"
     },
     {
         "name": "Guam",
-        "abbreviation": "GU"
+        "abbreviation": "GU",
+        "capital": "Hagatna",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Hawaii",
-        "abbreviation": "HI"
+        "abbreviation": "HI",
+        "capital": "Honolulu",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "12",
+        "lowrate": "1.40",
+        "highrate": "11.00"
     },
     {
         "name": "Idaho",
-        "abbreviation": "ID"
+        "abbreviation": "ID",
+        "capital": "Boise",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "7",
+        "lowrate": "1.125",
+        "highrate": "6.925"
     },
     {
         "name": "Illinois",
-        "abbreviation": "IL"
+        "abbreviation": "IL",
+        "capital": "Springfield",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "4.95",
+        "highrate": "4.95"
     },
     {
         "name": "Indiana",
-        "abbreviation": "IN"
+        "abbreviation": "IN",
+        "capital": "Indianapolis",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "3.23",
+        "highrate": "3.23"
     },
     {
         "name": "Iowa",
-        "abbreviation": "IA"
+        "abbreviation": "IA",
+        "capital": "Des Moines",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "9",
+        "lowrate": "0.33",
+        "highrate": "8.53"
     },
     {
         "name": "Kansas",
-        "abbreviation": "KS"
+        "abbreviation": "KS",
+        "capital": "Topeka",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "3",
+        "lowrate": "3.10",
+        "highrate": "5.70"
     },
     {
         "name": "Kentucky",
-        "abbreviation": "KY"
+        "abbreviation": "KY",
+        "capital": "Frankfort",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "5.00",
+        "highrate": "5.00"
     },
     {
         "name": "Louisiana",
-        "abbreviation": "LA"
+        "abbreviation": "LA",
+        "capital": "Baton Rouge",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "3",
+        "lowrate": "2.00",
+        "highrate": "6.00"
     },
     {
         "name": "Maine",
-        "abbreviation": "ME"
+        "abbreviation": "ME",
+        "capital": "Augusta",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "3",
+        "lowrate": "5.80",
+        "highrate": "7.15"
     },
     {
         "name": "Marshall Islands",
-        "abbreviation": "MH"
+        "abbreviation": "MH",
+        "capital": "Majuro",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Maryland",
-        "abbreviation": "MD"
+        "abbreviation": "MD",
+        "capital": "Annapolis",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "8",
+        "lowrate": "2.00",
+        "highrate": "5.75"
     },
     {
         "name": "Massachusetts",
-        "abbreviation": "MA"
+        "abbreviation": "MA",
+        "capital": "Boston",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "5.05",
+        "highrate": "5.05"
     },
     {
         "name": "Michigan",
-        "abbreviation": "MI"
+        "abbreviation": "MI",
+        "capital": "Lansing",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "4.25",
+        "highrate": "4.25"
     },
     {
         "name": "Minnesota",
-        "abbreviation": "MN"
+        "abbreviation": "MN",
+        "capital": "Saint Paul",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "4",
+        "lowrate": "5.35",
+        "highrate": "9.85"
     },
     {
         "name": "Mississippi",
-        "abbreviation": "MS"
+        "abbreviation": "MS",
+        "capital": "Jackson",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "3",
+        "lowrate": "3.00",
+        "highrate": "5.00"
     },
     {
         "name": "Missouri",
-        "abbreviation": "MO"
+        "abbreviation": "MO",
+        "capital": "Jefferson City",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "9",
+        "lowrate": "1.50",
+        "highrate": "5.40"
     },
     {
         "name": "Montana",
-        "abbreviation": "MT"
+        "abbreviation": "MT",
+        "capital": "Helena",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "7",
+        "lowrate": "1.00",
+        "highrate": "6.90"
     },
     {
         "name": "Nebraska",
-        "abbreviation": "NE"
+        "abbreviation": "NE",
+        "capital": "Lincoln",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "4",
+        "lowrate": "2.46",
+        "highrate": "6.84"
     },
     {
         "name": "Nevada",
-        "abbreviation": "NV"
+        "abbreviation": "NV",
+        "capital": "Carson City",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     },
     {
         "name": "New Hampshire",
-        "abbreviation": "NH"
+        "abbreviation": "NH",
+        "capital": "Concord",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "5.00",
+        "highrate": "5.00"
     },
     {
         "name": "New Jersey",
-        "abbreviation": "NJ"
+        "abbreviation": "NJ",
+        "capital": "Trenton",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "7",
+        "lowrate": "1.40",
+        "highrate": "10.75"
     },
     {
         "name": "New Mexico",
-        "abbreviation": "NM"
+        "abbreviation": "NM",
+        "capital": "Santa Fe",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "4",
+        "lowrate": "1.70",
+        "highrate": "4.90"
     },
     {
         "name": "New York",
-        "abbreviation": "NY"
+        "abbreviation": "NY",
+        "capital": "Albany",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "8",
+        "lowrate": "4.00",
+        "highrate": "8.82"
     },
     {
         "name": "North Carolina",
-        "abbreviation": "NC"
+        "abbreviation": "NC",
+        "capital": "Raleigh",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "5.25",
+        "highrate": "5.25"
     },
     {
         "name": "North Dakota",
-        "abbreviation": "ND"
+        "abbreviation": "ND",
+        "capital": "Bismarck",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "5",
+        "lowrate": "1.10",
+        "highrate": "2.90"
     },
     {
         "name": "Northern Mariana Islands",
-        "abbreviation": "MP"
+        "abbreviation": "MP",
+        "capital": "Saipan",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Ohio",
-        "abbreviation": "OH"
+        "abbreviation": "OH",
+        "capital": "Columbus",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "7",
+        "lowrate": "1.980",
+        "highrate": "4.997"
     },
     {
         "name": "Oklahoma",
-        "abbreviation": "OK"
+        "abbreviation": "OK",
+        "capital": "Oklahoma City",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "6",
+        "lowrate": "0.50",
+        "highrate": "5.00"
     },
     {
         "name": "Oregon",
-        "abbreviation": "OR"
+        "abbreviation": "OR",
+        "capital": "Salem",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "4",
+        "lowrate": "5.00",
+        "highrate": "9.90"
     },
     {
         "name": "Palau",
-        "abbreviation": "PW"
+        "abbreviation": "PW",
+        "capital": "Ngerulmud",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Pennsylvania",
-        "abbreviation": "PA"
+        "abbreviation": "PA",
+        "capital": "Harrisburg",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "3.07",
+        "highrate": "3.07"
     },
     {
         "name": "Puerto Rico",
-        "abbreviation": "PR"
+        "abbreviation": "PR",
+        "capital": "San Juan",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Rhode Island",
-        "abbreviation": "RI"
+        "abbreviation": "RI",
+        "capital": "Providence",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "3",
+        "lowrate": "3.75",
+        "highrate": "5.99"
     },
     {
         "name": "South Carolina",
-        "abbreviation": "SC"
+        "abbreviation": "SC",
+        "capital": "Columbia",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "6",
+        "lowrate": "1.10",
+        "highrate": "7.00"
     },
     {
         "name": "South Dakota",
-        "abbreviation": "SD"
+        "abbreviation": "SD",
+        "capital": "Pierre",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     },
     {
         "name": "Tennessee",
-        "abbreviation": "TN"
+        "abbreviation": "TN",
+        "capital": "Nashville",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "2.00",
+        "highrate": "2.00"
     },
     {
         "name": "Texas",
-        "abbreviation": "TX"
+        "abbreviation": "TX",
+        "capital": "Austin",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     },
     {
         "name": "Utah",
-        "abbreviation": "UT"
+        "abbreviation": "UT",
+        "capital": "Salt Lake City",
+        "flattax": true,
+        "taxfree": false,
+        "taxbrackets": "1",
+        "lowrate": "4.95",
+        "highrate": "4.95"
     },
     {
         "name": "Vermont",
-        "abbreviation": "VT"
+        "abbreviation": "VT",
+        "capital": "Montpelier",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "5",
+        "lowrate": "3.35",
+        "highrate": "8.95"
     },
     {
         "name": "Virgin Islands",
-        "abbreviation": "VI"
+        "abbreviation": "VI",
+        "capital": "Charlotte Amalie",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "",
+        "lowrate": "",
+        "highrate": ""
     },
     {
         "name": "Virginia",
-        "abbreviation": "VA"
+        "abbreviation": "VA",
+        "capital": "Richmond",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "4",
+        "lowrate": "2.00",
+        "highrate": "5.75"
     },
     {
         "name": "Washington",
-        "abbreviation": "WA"
+        "abbreviation": "WA",
+        "capital": "Olympia",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     },
     {
         "name": "West Virginia",
-        "abbreviation": "WV"
+        "abbreviation": "WV",
+        "capital": "Charleston",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "5",
+        "lowrate": "3.00",
+        "highrate": "6.50"
     },
     {
         "name": "Wisconsin",
-        "abbreviation": "WI"
+        "abbreviation": "WI",
+        "capital": "Madison",
+        "flattax": false,
+        "taxfree": false,
+        "taxbrackets": "4",
+        "lowrate": "4.00",
+        "highrate": "7.65"
     },
     {
         "name": "Wyoming",
-        "abbreviation": "WY"
+        "abbreviation": "WY",
+        "capital": "Cheyenne",
+        "flattax": false,
+        "taxfree": true,
+        "taxbrackets": "0",
+        "lowrate": "0",
+        "highrate": "0"
     }
 ]

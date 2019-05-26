@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<h2>Cities ({{_cities|length}})</h2>
+<hr>
+
+{% if _cities|length < 1 %}
+<p>Nothing to display, try entering some cities first</p>
+{% else %}
+
+<div class="container-fluid">
+	<!-- <div class="table-wrapper-scroll-y my-custom-scrollbar"> -->
+	<table class="table table-sm table-striped table-bordered">
+		<thead>
+			<tr>
+				<th scope="col">City</th>
+				<th scope="col">State</th>
+				<th scope="col">PPI</th>
+				<th scope="col">SI</th>
+				<th scope="col">HCI</th>
+				<th scope="col">CI</th>
+				<th scope="col">COLI</th>
+				<th scope="col">PP2IR</th>
+				<th scope="col">TCTI</th>
+				<th scope="col">PI</th>
+				<th scope="col">QS</th>
+				<th scope="col">Notes</th>
+				<th scope="col">Created At</th>
+				<th scope="col">Modified At</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for city in _cities %}
+			<tr>
+				<td>{{ city['city'] }}</td>
+				<td>{{ city['state'] }}</td>
+				<td>{{ city['purchasing_power_index'] }}</td>
+				<td>{{ city['safety_index'] }}</td>
+				<td>{{ city['health_care_index'] }}</td>
+				<td>{{ city['climate_index'] }}</td>
+				<td>{{ city['cost_of_living_index'] }}</td>
+				<td>{{ city['property_price_to_income_ratio'] }}</td>
+				<td>{{ city['traffic_commute_time_index'] }}</td>
+				<td>{{ city['pollution_index'] }}</td>
+				<td>{{ city['quality_sum'] }}</td>
+				<td class="text-truncate" style="max-width: 150px;">{{ city['notes'] }}</td>
+				<td class="text-truncate" style="max-width: 50px;">{{ city['created_at'] }}</td>
+				<td class="text-truncate" style="max-width: 50px;">{{ city['modified_at'] }}</td>
+				<td>
+					<a href="/detail/city/{{ city['id'] }}"
+						class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
+					<a href="/edit/city/{{ city['id'] }}" class="btn btn-outline-info btn-sm pull-right">Edit</a>
+					<a href="/delete/city/{{ city['id'] }}" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<th scope="col">City</th>
+				<th scope="col">State</th>
+				<th scope="col">PPI</th>
+				<th scope="col">SI</th>
+				<th scope="col">HCI</th>
+				<th scope="col">CI</th>
+				<th scope="col">COLI</th>
+				<th scope="col">PP2IR</th>
+				<th scope="col">TCTI</th>
+				<th scope="col">PI</th>
+				<th scope="col">QS</th>
+				<th scope="col">Notes</th>
+				<th scope="col">Created At</th>
+				<th scope="col">Modified At</th>
+				<th scope="col">Actions</th>
+			</tr>
+		</tfoot>
+	</table>
+	<!-- </div> -->
+</div>
+<hr>
+{% endif %}
+<a href="{{url_for('add_city')}}" class="badge badge-primary">Add City</a>
+<hr>
+{% endblock %}

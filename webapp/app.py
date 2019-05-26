@@ -3,11 +3,17 @@ import os
 import re
 import ast
 import json
+import lorem
 import random
 import string
 import datetime
+import operator
 import urllib.parse
-from functools import wraps
+import requests as HTTP
+from pprint import pprint
+from functools import wraps, reduce
+from collections import OrderedDict
+from distutils.util import strtobool
 from createDB import CreateDB
 from flask import (
     Flask,
@@ -31,21 +37,31 @@ from sqlalchemy_serializer import SerializerMixin
 from flask_wtf import Form, FlaskForm
 from wtforms import (
     StringField, TextAreaField, DecimalField,
-    PasswordField, validators, SelectField,
+    PasswordField, SelectField, BooleanField,
     IntegerField, SubmitField, RadioField,
-    BooleanField,
 )
 from wtforms.fields.html5 import EmailField 
+from wtforms.validators import (
+    DataRequired, Length, Email, EqualTo,
+    ValidationError, InputRequired, Optional
+)
 from passlib.hash import sha256_crypt
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect, CSRFError
 
-from data.data_import import get_state_names_from_json, get_state_abbreviations_from_json, get_state_abbreviation
+from data.data_import import (
+    get_state_names_from_json,
+    get_state_abbreviations_from_json,
+    get_state_abbreviation,
+    loadStatesEnMasse
+)
 
-"""-----------------------------------------------------------------------------"""
+"""-----------------------------------------------------------------------------
+        # __init__
+-----------------------------------------------------------------------------"""
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_file = "sqlite:///{}".format(os.path.join(project_dir, "trabaDB.db"))
+database_file = "sqlite:///{}".format(os.path.join(project_dir, "site.db"))
 app = Flask(__name__)
 csrf = CSRFProtect()
 api = Api(app, decorators=[csrf.exempt])
@@ -61,8 +77,139 @@ mail = Mail(app)
 db = SQLAlchemy(app)
 csrf.init_app(app)
 
-"""-----------------------------------------------------------------------------"""
-# HELPER FUNCTIONS
+
+"""-----------------------------------------------------------------------------
+        # models.py
+-----------------------------------------------------------------------------"""
+# Production
+def generate_api_token(bits=32):
+    """
+    Generates an api token based from random alphanumeric characters
+    """
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=bits))
+
+
+class User_db(db.Model, SerializerMixin):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True, onupdate=datetime.datetime.utcnow())
+    apitoken = db.Column(db.String(32), unique=True, nullable=False, default=generate_api_token())
+    confirmed = db.Column(db.Boolean, unique=False, default=False)
+    name = db.Column(db.String(64), unique=False, nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    username = db.Column(db.String(32), unique=True, nullable=False)
+    password = db.Column(db.String(100), unique=False, nullable=False)
+    is_admin = db.Column(db.Boolean, unique=False, default=False)
+
+    def get_reset_token(self, expires_sec=60*30):
+        s = Serializer(app.config["SECRET_KEY"], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User_db.query.get(user_id)
+
+
+class Interaction_db(db.Model, SerializerMixin):
+    __tablename__ = 'interactions'
+
+    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True, onupdate=datetime.datetime.utcnow())
+    author = db.Column(db.String(32), unique=False, nullable=False)
+    channel = db.Column(db.String(32), nullable=False)
+    company = db.Column(db.String(60), nullable=False)
+    city = db.Column(db.String(32), nullable=False)
+    state = db.Column(db.String(2), nullable=False)
+    summary = db.Column(db.Text(), nullable=True)
+
+
+class State_db(db.Model, SerializerMixin):
+    __tablename__ = 'states'
+
+    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
+    author = db.Column(db.String(100), unique=False, nullable=False)
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True, onupdate=datetime.datetime.utcnow())
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    abbreviation = db.Column(db.String(2), unique=True, nullable=False)
+    capital = db.Column(db.String(100), unique=False, nullable=True, default='')
+    taxfree = db.Column(db.Boolean, unique=False, nullable=True, default=False)
+    flattax = db.Column(db.Boolean, unique=False, nullable=True, default=False)
+    taxbrackets = db.Column(db.Integer, unique=False, nullable=True)
+    lowrate = db.Column(db.Float, unique=False, nullable=True)
+    highrate = db.Column(db.Float, unique=False, nullable=True)
+    notes = db.Column(db.Text, unique=False, nullable=True, default="")
+    # threshold = db.Column(db.String(40), unique=False, nullable=True, primary_key=False)
+
+
+class City_db(db.Model, SerializerMixin):
+    __tablename__ = 'city'
+
+    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True, onupdate=datetime.datetime.utcnow())
+    author = db.Column(db.String(32), unique=False, nullable=False)
+    city = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
+    state = db.Column(db.String(2), unique=False, nullable=False, primary_key=False)
+    purchasing_power_index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    safety_index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    health_care_index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    climate_index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    cost_of_living_index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    property_price_to_income_ratio = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    traffic_commute_time_index  = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    pollution_index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    quality_sum = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+    # salary = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # rent = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # home = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # local_tax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # property_tax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # living_index = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # food_index = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # transit_index = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    # companies = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+    # neighborhoods = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+    # notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+
+
+class Job_db(db.Model, SerializerMixin):
+    __tablename__ = 'jobs'
+
+    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
+    modified_at = db.Column(db.DateTime(), unique=False, nullable=True, onupdate=datetime.datetime.utcnow())
+    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
+    author = db.Column(db.String(32), unique=False, nullable=False)
+    position = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
+    level = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
+    company = db.Column(db.String(80), unique=False, nullable=False, primary_key=False)
+    city = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
+    state = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
+    cotype = db.Column(db.String(20), unique=False, nullable=True, primary_key=False)
+    salary = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
+    link = db.Column(db.String(500), unique=False, nullable=True, primary_key=False)
+    contact = db.Column(db.String(80), unique=False, nullable=True, primary_key=False)
+    hrtitle = db.Column(db.String(80), unique=False, nullable=True, primary_key=False)
+    phone = db.Column(db.Integer, unique=False, nullable=True, primary_key=False)
+    email = db.Column(db.String(80), unique=False, nullable=True, primary_key=False)
+    description = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+    experience = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+    notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
+
+
+"""-----------------------------------------------------------------------------
+        # utilities.py
+-----------------------------------------------------------------------------"""
+# unused
 def pop_underscored_keys(dic):
 	"""
     Removes all keys beginning with an underscore.
@@ -75,22 +222,14 @@ def pop_underscored_keys(dic):
 			dic.pop(k)
 	return dic
 
-
+# unused
 def remove_empty_keys(dic):
     """
     Returns a new dictionary with empty string values removed
     """
     return {k: v for k, v in dic.items() if v is not ''}
 
-
-def y_to_boolean(dic):
-    for k in dic.keys():
-        if dic[k] == 'y':
-            dic[k] = True
-        else:
-            pass
-
-
+# unused
 def only_updated_keys(old,new):
 	"""
 	Function takes in 2 dictionaries and returns a dictionary
@@ -102,213 +241,35 @@ def only_updated_keys(old,new):
 			new.pop(k)
 	return new
 
-
-def generate_api_token(bits=16):
-    """
-    Generates an api token based from random alphanumeric characters
-    """
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=bits))
-
-
-
-"""-----------------------------------------------------------------------------"""
-# MODELS
-"""-----------------------------------------------------------------------------"""
-class Users(db.Model, SerializerMixin):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    apitoken = db.Column(db.String(16), unique=True, nullable=False, default=generate_api_token())
-    confirmed = db.Column(db.Boolean, unique=False, default=False)
-    name = db.Column(db.String(64), unique=False, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    username = db.Column(db.String(32), unique=True, nullable=False)
-    password = db.Column(db.String(100), unique=False, nullable=False)
-    is_admin = db.Column(db.Boolean, unique=False, default=False)
-
-    def get_reset_token(self, expires_sec=1800):
-        # default expiration time is 30 minutes
-        s = Serializer(app.config["SECRET_KEY"], expires_sec)
-        return s.dumps({'user_id': self.id}).decode('utf-8')
-
-    @staticmethod
-    def verify_reset_token(token):
-        s = Serializer(app.config['SECRET_KEY'])
-        try:
-            user_id = s.loads(token)['user_id']
-        except:
-            return None
-        return Users.query.get(user_id)
-
-
-class Interaction_db(db.Model, SerializerMixin):
-    __tablename__ = 'interactions'
-
-    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    Channel = db.Column(db.String(32), nullable=False)
-    Company = db.Column(db.String(60), nullable=False)
-    City = db.Column(db.String(32), nullable=False)
-    State = db.Column(db.String(2), nullable=False)
-    Summary = db.Column(db.Text(), nullable=True)
-    username = db.Column(db.String(32), unique=False, nullable=False)
-
-
-class State_db(db.Model, SerializerMixin):
-    __tablename__ = 'states'
-
-    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-    abbreviation = db.Column(db.String(2), unique=True, nullable=False)
-    # _zipcode = db.Column(db.Text, unique=False, nullable=True, default='0')
-    capital = db.Column(db.String(100), unique=False, nullable=True)
-    taxfree = db.Column(db.Boolean, unique=False, nullable=True, default=False)
-    flattax = db.Column(db.Boolean, unique=False, nullable=True, default=False)
-    taxbrackets = db.Column(db.Integer, unique=False, nullable=True)
-    lowrate = db.Column(db.Float, unique=False, nullable=True)
-    highrate = db.Column(db.Float, unique=False, nullable=True)
-    notes = db.Column(db.Text, unique=False, nullable=True, default="")
-
-
-class City_dbII(db.Model, SerializerMixin):
-    __tablename__ = 'city2'
-
-    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    
-    Purchasing_Power_Index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Safety_Index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Health_Care_Index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Climate_Index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Cost_of_Living_Index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Property_Price_to_Income_Ratio = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Traffic_Commute_Time_Index  = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Pollution_Index = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Quality_Sum = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-
-    City = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
-    State = db.Column(db.String(50), unique=False, nullable=True, primary_key=False) # eventually not nullable
-    Abbreviation = db.Column(db.String(2), unique=False, nullable=True, primary_key=False) # eventually not nullable
-
-    Salary = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Coli = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Rent = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Home = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    StateBrackets = db.Column(db.String(10), unique=False, nullable=True, primary_key=False)
-    Top_Income_Range = db.Column(db.String(40), unique=False, nullable=True, primary_key=False)
-    Tax_Rate = db.Column(db.String(30), unique=False, nullable=True, primary_key=False)
-    LocalTax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    PropertyTax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Living = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Food = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Transit = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Companies = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    Neighborhoods = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    Notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-
-
-class City_db(db.Model, SerializerMixin):
-    __tablename__ = 'cities'
-
-    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-    City = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
-    State = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
-    Salary = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Coli = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Rent = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Home = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    StateTax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    LocalTax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    PropertyTax = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Living = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Food = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Transit = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Companies = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    Neighborhoods = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    Notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-
-
-
-class Job_db(db.Model, SerializerMixin):
-    __tablename__ = 'jobs'
-
-    id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    City = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
-    State = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
-    Position = db.Column(db.String(50), unique=False, nullable=False, primary_key=False)
-    Level = db.Column(db.String(50), unique=False, nullable=True, primary_key=False)
-    Company = db.Column(db.String(80), unique=False, nullable=False, primary_key=False)
-    Type = db.Column(db.String(20), unique=False, nullable=True, primary_key=False)
-    Salary = db.Column(db.Float, unique=False, nullable=True, primary_key=False)
-    Link = db.Column(db.String(500), unique=False, nullable=True, primary_key=False)
-    Contact = db.Column(db.String(80), unique=False, nullable=True, primary_key=False)
-    Title = db.Column(db.String(80), unique=False, nullable=True, primary_key=False)
-    Phone = db.Column(db.Integer, unique=False, nullable=True, primary_key=False)
-    Email = db.Column(db.String(80), unique=False, nullable=True, primary_key=False)
-    Description = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    Experience = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    Notes = db.Column(db.Text, unique=False, nullable=True, primary_key=False)
-    modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-
-
-"""-----------------------------------------------------------------------------"""
-def handleAddCityreq(request_dict):
-    if ''.join(request_dict.values()).strip() == '':
-        return (None, 'Empty request')
-    titleStrings = set(['City','State','Abbreviation'])
-    request_keys = set(list(request_dict.keys()))
-    if not titleStrings.issubset(request_keys):
-        return (None, 'Required request keys not present')
-    for key, val in request_dict.items():
-        if isdigit(val): request_dict[key] = float(val)
-    return (request_dict, '[200] handleAddCityreq()')
-
-
-"""-----------------------------------------------------------------------------"""
-def handleAddJobreq(request_dict):
-    if ''.join(request_dict.values()).strip() == '':
-        return None
+# Production
+def execute_request(_request,_method,_route):
+    _params = dict(_request.form)
+    _params.pop('csrf_token')
+    _path = os.path.join(_request.url_root,f'api/{_route}')
+    _headers = {'Token': session['api_request_token']}
+    if _method.upper() == 'POST':
+        response = HTTP.post(_path,params=_params,headers=_headers)
     else:
-        titleStrings = ['City','Position','Level','Type','Contact','Title']
-        floatStrings = ['Salary']
-        intStrings = ['Phone']
-        textStrings = ['State','Link','Email','Company','Description','Experience','Notes']
-        try:
-            for each in titleStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    request_dict[each] = request_dict[each].title()
-            for each in floatStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    request_dict[each] = float(request_dict[each])
-            for each in intStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    request_dict[each] = int(''.join(re.findall(r'\d+',request_dict[each])))
-            for each in textStrings:
-                if request_dict[each] == '':
-                    request_dict[each] = None
-                else:
-                    pass
-            return request_dict
-        except:
-            return None
+        response = HTTP.get(_path,params=_params,headers=_headers)
+    return response
 
+# Beta
+def get_states_from_db():
+    # res = db.session.query(State_db).filter_by(author='admin').all()
+    res = db.session.query(State_db).all()
+    if res:
+        name_long = []
+        name_short = []
+        for result in res:
+            x = result.to_dict()
+            name_long.append(x['name'])
+            name_short.append(x['abbreviation'])
+        return list(zip(name_short, name_long))
+    return [('','')]
 
-"""-----------------------------------------------------------------------------"""
+"""-----------------------------------------------------------------------------
+        # decorators.py
+-----------------------------------------------------------------------------"""
 # Check if user logged in
 def is_logged_in(f):
     @wraps(f)
@@ -319,7 +280,6 @@ def is_logged_in(f):
             flash('Unauthorized, Please log in', 'danger')
             return redirect(url_for('login'))
     return wrap
-
 
 # Check if user is admin
 def is_admin(f):
@@ -332,7 +292,6 @@ def is_admin(f):
             return redirect(url_for('index'))
     return wrap
 
-
 # Check if user logged out
 def is_logged_out(f):
     @wraps(f)
@@ -344,40 +303,64 @@ def is_logged_out(f):
             return redirect(url_for('dashboard'))
     return wrap
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/logout')
-@is_logged_in
-def logout():
-    session.clear()
-    flash('You are now logged out', 'success')
-    return redirect(url_for('login'))
-
-
-"""-----------------------------------------------------------------------------"""
+"""-----------------------------------------------------------------------------
+        # users.py
+-----------------------------------------------------------------------------"""
 class RegisterForm(FlaskForm):
-    name = StringField('Name', [validators.Length(min=1, max=64), validators.DataRequired()])
-    email = EmailField('Email', [validators.InputRequired("Please enter your email address."), validators.Email("This field requires a valid email address")])
-    username = StringField('Username', [validators.Length(min=4, max=32), validators.DataRequired()])
+    name = StringField('Name', [Length(min=4, max=64), DataRequired()])
+    email = EmailField('Email', [InputRequired("Please enter your email address."),
+                                Email("This field requires a valid email address")])
+    username = StringField('Username', [Length(min=4, max=32), DataRequired()])
     password = PasswordField('Password', [
-        validators.DataRequired('Please enter a password'),
-        validators.EqualTo('confirm', message='Passwords do not match')
+        DataRequired('Please enter a password'),
+        EqualTo('confirm', message='Passwords do not match')
     ])
     confirm = PasswordField('Confirm Password')
+
+    def validate_username(self, username):
+        if not (re.match('^[\w-]+$', username.data) is not None):
+            raise ValidationError('Username can only contain alphanumeric characters with no spaces')
+        res = User_db.query.filter_by(username=username.data).first()
+        if res:
+            raise ValidationError('This username is taken, please choose another.')
+
+    def validate_email(self, email):
+        res = User_db.query.filter_by(email=email.data).first()
+        if res:
+            raise ValidationError('This email is taken, please use another.')
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', [Length(min=4, max=32), DataRequired()])
+    password = PasswordField('Password', [DataRequired()])
+
+
+class RequestResetForm(FlaskForm):
+    email = EmailField('Email', [DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', [
+        DataRequired(),
+        EqualTo('confirm', message='Passwords do not match')
+    ])
+    confirm = PasswordField('Confirm Password')
+    submit = SubmitField('Reset Password')
 
 
 @app.route('/register', methods=['GET', 'POST'])
 @is_logged_out
 def register():
     form = RegisterForm(request.form)
-    if request.method == 'POST':
+    if form.validate_on_submit():
         name = form.name.data
         email = form.email.data
         username = form.username.data
         password = sha256_crypt.encrypt(str(form.password.data))
         db_data = {'name':name,'email':email,'username':username,'password':password}
         try:
-            cls = Users(**db_data)
+            cls = User_db(**db_data)
             db.session.add(cls)
             db.session.commit()
             db_response = True
@@ -388,23 +371,17 @@ def register():
             return redirect(url_for('login'))
         else:
             error = 'Unable to create account'
-            return render_template('register.html',form=form, error=error)
-    return render_template('register.html',form=form)
-
-
-"""-----------------------------------------------------------------------------"""
-class LoginForm(FlaskForm):
-    username = StringField('Username', [validators.Length(min=4, max=32), validators.DataRequired()])
-    password = PasswordField('Password', [validators.DataRequired()])
-
+            return render_template('site_register.html',form=form, error=error)
+    return render_template('site_register.html',form=form)
 
 @app.route('/login', methods=['GET','POST'])
+@is_logged_out
 def login():
     form = LoginForm(request.form)
-    if request.method == 'POST':
+    if form.validate_on_submit():
         username = request.form['username']
         password_candidate = request.form['password']
-        result = Users.query.filter_by(username=username).first()
+        result = User_db.query.filter_by(username=username).first()
         if result is not None:
             # Username exists
             if sha256_crypt.verify(password_candidate, result.password):
@@ -412,36 +389,28 @@ def login():
                 session['username'] = username
                 session['api_request_token'] = result.apitoken
                 session['email'] = result.email
+                session['name'] = result.name
                 if result.is_admin == True: session['is_admin'] = True
                 flash('You are now logged in', 'success')
                 return redirect(url_for('dashboard'))
             else:
                 error = 'Invalid password'
-                return render_template('login.html', error=error, form=form)
+                return render_template('site_login.html', error=error, form=form)
         else:
             app.logger.info('NO USER')
             error = 'Username not found'
-            return render_template('login.html', error=error, form=form)
-    return render_template('login.html',form=form)
+            return render_template('site_login.html', error=error, form=form)
+    return render_template('site_login.html',form=form)
 
-
-"""-----------------------------------------------------------------------------"""
-class RequestResetForm(FlaskForm):
-    email = EmailField('Email', [validators.DataRequired(), validators.Email()])
-    submit = SubmitField('Request Password Reset')
-
-
-class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords do not match')
-    ])
-    confirm = PasswordField('Confirm Password')
-    submit = SubmitField('Reset Password')
-
+@app.route('/logout')
+@is_logged_in
+def logout():
+    session.clear()
+    flash('You are now logged out', 'success')
+    return redirect(url_for('login'))
 
 def send_reset_email(user):
-    token = Users.get_reset_token(user)
+    token = User_db.get_reset_token(user)
     msg = Message('Password Reset Request',
                 sender='traba.app@gmail.com',
                 recipients=[user.email])
@@ -452,26 +421,24 @@ If you did not make this request then simply ignore this email and no changes wi
 '''
     mail.send(msg)
 
-
 @app.route('/reset_password',methods=['GET','POST'])
 @is_logged_out
 def reset_request():
     form = RequestResetForm()
     if form.validate_on_submit():
-        user = Users.query.filter_by(email=form.email.data).first()
+        user = User_db.query.filter_by(email=form.email.data).first()
         if user is None:
             flash('There is no account with that email, try registering first','info')
             return redirect(url_for('reset_request'))
         send_reset_email(user)
         flash(f'An email has been sent to {form.email.data} with instructions to reset your password','info')
         return redirect(url_for('login'))
-    return render_template('reset_request.html',form=form)
-
+    return render_template('site_reset_request.html',form=form)
 
 @app.route('/reset_password/<token>',methods=['GET','POST'])
 @is_logged_out
 def reset_token(token):
-    user = Users.verify_reset_token(token)
+    user = User_db.verify_reset_token(token)
     if user is None:
         flash('That is an invalid or expired token', 'warning')
         return redirect(url_for('reset_request'))
@@ -490,33 +457,18 @@ def reset_token(token):
         else:
             flash('Unable reset password', 'warning')
             return redirect(url_for('reset_request'))
-    return render_template('reset_token.html', form=form)
+    return render_template('site_reset_token.html', form=form)
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/search',methods=['GET','POST'])
+@app.route('/new/token',methods=['POST'])
 @is_logged_in
-def search_results():
-    q = str(request.args.get('search'))
-    # //
-    # Fill out logic here
-    # //
-    return render_template('search.html',_data=q)
-# eventually, set a route to POST to handle query, then redirect to GET page
-
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/newtoken',methods=['POST'])
-@is_logged_in
-def newtoken():
-    result = Users.query.filter_by(username=session['username']).first().to_dict()
+def new_token():
+    result = User_db.query.filter_by(username=session['username']).first().to_dict()
     if result['apitoken'] == session['api_request_token']:
         try:
             new_token = generate_api_token()
-            rows_changed = Users.query.filter_by(username=session['username']).update(dict(apitoken=new_token))
+            rows_changed = User_db.query.filter_by(username=session['username']).update(dict(apitoken=new_token))
             db.session.commit()
             session['api_request_token'] = new_token
-            flash('Re-generated token','success')
             return redirect(url_for('settings'))
         except:
             db.session.rollback()
@@ -527,83 +479,61 @@ def newtoken():
         return redirect(url_for('settings'))
     return redirect(url_for('settings'))
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/reset_city',methods=['POST'])
+@app.route('/reset/user',methods=['POST'])
 @is_logged_in
-def reset_city():
+@is_admin
+def reset_user():
     try:
-        num_rows_deleted = db.session.query(City_dbII).delete()
+        num_rows_deleted = db.session.query(User_db).filter(User_db.username != 'admin').delete()
         db.session.commit()
-        flash(f'Reset {num_rows_deleted} cities','success')
+        flash(f'Reset {num_rows_deleted} users','success')
     except:
         db.session.rollback()
         flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('admin_panel'))
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/reset_job',methods=['POST'])
+"""-----------------------------------------------------------------------------
+        # search.py
+-----------------------------------------------------------------------------"""
+@app.route('/search',methods=['GET','POST'])
 @is_logged_in
-def reset_job():
-    try:
-        num_rows_deleted = db.session.query(Job_db).delete()
-        db.session.commit()
-        flash(f'Reset {num_rows_deleted} jobs','success')
-    except:
-        db.session.rollback()
-        flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+def search_results():
+    q = str(request.args.get('search'))
+    username = session['username']
+    job_list = []
+    interaction_list = []
+    city_list = []
 
+    res = db.session.query(Job_db).filter_by(author=username).all()
+    if res:
+        for result in res:
+            job_list.append(result.to_dict())
 
-"""-----------------------------------------------------------------------------"""
-@app.route('/reset_interaction',methods=['POST'])
-@is_logged_in
-def reset_interaction():
-    try:
-        num_rows_deleted = db.session.query(Interaction_db).delete()
-        db.session.commit()
-        flash(f'Reset {num_rows_deleted} interactions','success')
-    except:
-        db.session.rollback()
-        flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    res = db.session.query(Interaction_db).filter_by(author=username).all()
+    if res:
+        for result in res:
+            interaction_list.append(result.to_dict())
 
+    res = db.session.query(City_db).filter_by(author=username).all()
+    if res:
+        for result in res:
+            city_list.append(result.to_dict())
 
-"""-----------------------------------------------------------------------------"""
-@app.route('/reset_states',methods=['POST'])
-@is_logged_in
-def reset_states():
-    try:
-        num_rows_deleted = db.session.query(State_db).delete()
-        db.session.commit()
-        flash(f'Reset {num_rows_deleted} states','success')
-    except:
-        db.session.rollback()
-        flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    _dict =  {'job':job_list,
+            'interaction':interaction_list,
+            'city':city_list}
+    _data = json.dumps(_dict, sort_keys=True, indent=4)
 
+    return render_template('site_search.html',_data=_data,_q=q)
 
-"""-----------------------------------------------------------------------------"""
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-"""-----------------------------------------------------------------------------"""
-# beta template for fancy home page
-@app.route("/home", methods=["GET", "POST"])
-def home():
-    return render_template("home.html")
-
-
-"""-----------------------------------------------------------------------------"""
+"""-----------------------------------------------------------------------------
+        # admin.py
+-----------------------------------------------------------------------------"""
 @app.route('/admin')
 @is_logged_in
 @is_admin
 def admin_panel():
-    # get all Users and make a table
-    users = Users.query.all()
+    users = User_db.query.all()
     all_users = []
     for each in users:
         x = each.to_dict()
@@ -616,104 +546,304 @@ def admin_panel():
         for each in states:
             x = each.to_dict()
             all_states.append(x)
-    return render_template('adminpanel.html',_users=all_users,_states=all_states)
+    
+    cities = City_db.query.all()
+    all_cities = []
+    if cities:
+        for each in cities:
+            x = each.to_dict()
+            all_cities.append(x)
 
+    jobs = Job_db.query.all()
+    all_jobs = []
+    if jobs:
+        for each in jobs:
+            x = each.to_dict()
+            all_jobs.append(x)
 
-"""-----------------------------------------------------------------------------"""
+    interactions = Interaction_db.query.all()
+    all_interactions = []
+    if interactions:
+        for each in interactions:
+            x = each.to_dict()
+            all_interactions.append(x)
+
+    return render_template('_admin_panel.html',_users=all_users,
+        _states=all_states,_cities=all_cities,_jobs=all_jobs,_interactions=all_interactions)
+
+@app.route('/export/users')
+@is_logged_in
+@is_admin
+def export_users():
+    res = User_db.query.all()
+    DataList = []
+    if res:
+        for result in res:
+            x = result.to_dict()
+            del x['password']
+            DataList.append(x)
+    return jsonify(DataList)
+
+@app.route('/export/states')
+@is_logged_in
+@is_admin
+def export_states():
+    res = State_db.query.all()
+    DataList = []
+    if res:
+        for result in res:
+            x = result.to_dict()
+            DataList.append(x)
+    return jsonify(DataList)
+
+@app.route('/export/cities')
+@is_logged_in
+@is_admin
+def export_cities():
+    res = City_db.query.all()
+    DataList = []
+    if res:
+        for result in res:
+            x = result.to_dict()
+            DataList.append(x)
+    return jsonify(DataList)
+
+@app.route('/export/interactions')
+@is_logged_in
+@is_admin
+def export_interactions():
+    res = Interaction_db.query.all()
+    DataList = []
+    if res:
+        for result in res:
+            x = result.to_dict()
+            DataList.append(x)
+    return jsonify(DataList)
+
+@app.route('/export/jobs')
+@is_logged_in
+@is_admin
+def export_jobs():
+    res = Job_db.query.all()
+    DataList = []
+    if res:
+        for result in res:
+            x = result.to_dict()
+            DataList.append(x)
+    return jsonify(DataList)
+
+@app.route('/email_users',methods=['GET'])
+@is_logged_in
+@is_admin
+def email_users():
+    return jsonify(request.args)
+
+"""-----------------------------------------------------------------------------
+        # views.py
+-----------------------------------------------------------------------------"""
+@app.route('/')
+def index():
+    return render_template('site_index.html')
+
+# beta template for fancy home page
+@app.route("/home", methods=['GET', 'POST'])
+def home():
+    return render_template("site_home.html")
+
+@app.route('/api')
+@app.route('/api/')
+def api_splash():
+    return render_template('site_api.html')
+
 @app.route('/settings')
 @is_logged_in
 def settings():
     # get User config json from DB
-    return render_template('settings.html')
+    return render_template('user_settings.html')
 
-
-"""-----------------------------------------------------------------------------"""
 @app.route('/dashboard')
 @is_logged_in
 def dashboard():
     now = datetime.datetime.now().strftime("%I:%M %p") + ' on ' + datetime.datetime.now().strftime("%a, %B %d 20%y")
-    num_city = City_dbII.query.count()
-    num_job = Job_db.query.count()
-    num_inter = Interaction_db.query.count()
-    return render_template('dashboard.html',now=now,num_city=num_city,num_job=num_job,num_inter=num_inter)
+    num_city = City_db.query.filter_by(author=session['username']).count()
+    num_job = Job_db.query.filter_by(author=session['username']).count()
+    num_inter = Interaction_db.query.filter_by(author=session['username']).count()
+    return render_template('user_dashboard.html',now=now,num_city=num_city,num_job=num_job,num_inter=num_inter)
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/addcity', methods=["GET","POST"])
+@app.route('/calendar')
 @is_logged_in
-def addcity():
-    if request.method == "POST":
-        request_dict = {}
-        for field in request.form:
-            request_dict[field] = request.form[field]
-        Data = handleAddCityreq(request_dict)
-        # check if city already exists in database, ask if user wants to edit
-        db_response = False
-        try:
-            cls = City_db(**Data)
-            db.session.add(cls)
-            db.session.commit()
-            db_response = True
-        except:
-            pass
-        flash('City successfully created', 'success') if db_response else flash('Could not create city', 'warning')
-        return redirect(url_for('dashboard'))
-    States = get_state_abbreviations_from_json()
-    return render_template('addcity.html',States=States)
+def calendar():
+    return render_template('user_calendar.html')
+
+"""-----------------------------------------------------------------------------
+        # city.py
+-----------------------------------------------------------------------------"""
+class CityForm(FlaskForm):
+    id = IntegerField('ID *', [Optional()])
+    author = StringField('Author *', [Optional()])
+    city = StringField('City *', [Length(min=2, max=32), DataRequired()])
+    state = SelectField('State *', choices=get_states_from_db())
+    # state = SelectField('State *', choices=list(zip(get_state_abbreviations_from_json(), get_state_names_from_json())))
+    purchasing_power_index = StringField('Purchasing Power Index', [Optional()])
+    safety_index = StringField('Safety Index', [Optional()])
+    health_care_index = StringField('Health Care Index', [Optional()])
+    climate_index = StringField('Climate Index', [Optional()])
+    cost_of_living_index = StringField('Cost Of Living Index', [Optional()])
+    property_price_to_income_ratio = StringField('Property Price To Income Ratio', [Optional()])
+    traffic_commute_time_index = StringField('Traffic Commute Time Index', [Optional()])
+    pollution_index = StringField('Pollution Index', [Optional()])
+    quality_sum = StringField('Quality Sum', [Optional()])
+    notes = TextAreaField('Notes', [Optional()])
 
 
-"""-----------------------------------------------------------------------------"""
-@app.route('/addjob', methods=["GET","POST"])
+@app.route('/cities')
 @is_logged_in
-def addjob():
-    if request.method == "POST":
-        request_dict = {}
-        for field in request.form:
-            request_dict[field] = request.form[field]
-        Data = handleAddJobreq(request_dict)
-        # check if city already exists in database
-        db_response = False
-        try:
-            cls = Job_db(**Data)
-            db.session.add(cls)
-            db.session.commit()
-            db_response = True
-        except:
-            pass
-        flash('Job successfully created', 'success') if db_response else flash('Could not create job', 'warning')
-        return redirect(url_for('dashboard'))
-    States = get_state_abbreviations_from_json()
-    return render_template('addjob.html',States=States)
+def cities():
+    res = City_db.query.filter_by(author=session['username']).all()
+    DataList = []
+    if res:
+        for result in res:
+            DataList.append(result.to_dict())
+    return render_template('view_cities.html',_cities=DataList)
 
+@app.route('/add/city', methods=['GET','POST'])
+@is_logged_in
+def add_city():
+    form = CityForm()
+    if form.validate_on_submit():
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="city")
+        # return jsonify(response.json()) # debugging
+        if response.status_code == 200:
+            flash(f'Successfully added {form.city.data}','success')
+            return redirect(url_for('cities'))
+        else:
+            flash(f'Unable to add city, status code {response.status_code}','warning')
+            return redirect(url_for('cities'))
+    return render_template('add_city.html',form=form)
 
-"""-----------------------------------------------------------------------------"""
-    # id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True)
-    # created_at = db.Column(db.DateTime(), nullable=False, default=datetime.datetime.utcnow())
-    # modified_at = db.Column(db.DateTime(), unique=False, nullable=True)
-    # name = db.Column(db.String(50), unique=True, nullable=False)
-    # abbreviation = db.Column(db.String(2), unique=True, nullable=False)
-    # capital = db.Column(db.String(100), unique=False, nullable=True)
-    # taxfree = db.Column(db.Boolean, unique=False, nullable=True, default=False)
-    # flattax = db.Column(db.Boolean, unique=False, nullable=True, default=False)
-    # taxbrackets = db.Column(db.Integer, unique=False, nullable=True)
-    # lowrate = db.Column(db.Float, unique=False, nullable=True)
-    # highrate = db.Column(db.Float, unique=False, nullable=True)
-    # notes = db.Column(db.Text, unique=False, nullable=True)
+@app.route('/edit/city/<id>',methods=['GET','POST'])
+@is_logged_in
+def edit_city(id):
+    form = CityForm()
+    City = db.session.query(City_db).filter_by(id=id).first().to_dict()
+    form.id.data = City['id']
+    form.author.data = City['author']
+    form.city.data = City['city']
+    form.state.data = City['state']
+    form.purchasing_power_index.data = City['purchasing_power_index']
+    form.safety_index.data = City['safety_index']
+    form.health_care_index.data = City['health_care_index']
+    form.climate_index.data = City['climate_index']
+    form.cost_of_living_index.data = City['cost_of_living_index']
+    form.property_price_to_income_ratio.data = City['property_price_to_income_ratio']
+    form.traffic_commute_time_index.data = City['traffic_commute_time_index']
+    form.pollution_index.data = City['pollution_index']
+    form.quality_sum.data = City['quality_sum']
+    if form.validate_on_submit():
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="city")
+        # return jsonify(response.json()) # DEBUGGING
+        if response.status_code == 202:
+            flash(f'Saved changes for {form.city.data}','success')
+            return redirect(url_for('cities'))
+        else:
+            flash(f'Unable to update {form.city.data}, status code {response.status_code}','warning')
+            return redirect(url_for('cities'))
+    return render_template('edit_city.html',form=form,Back=request.referrer or url_for('cities'))
+
+@app.route('/detail/city/<id>',methods=['GET'])
+@is_logged_in
+def detail_city(id):
+    form = CityForm()
+    City = db.session.query(City_db).filter_by(id=id).first().to_dict()
+    form.id.data = City['id']
+    form.author.data = City['author']
+    form.city.data = City['city']
+    form.state.data = City['state']
+    form.purchasing_power_index.data = City['purchasing_power_index']
+    form.safety_index.data = City['safety_index']
+    form.health_care_index.data = City['health_care_index']
+    form.climate_index.data = City['climate_index']
+    form.cost_of_living_index.data = City['cost_of_living_index']
+    form.property_price_to_income_ratio.data = City['property_price_to_income_ratio']
+    form.traffic_commute_time_index.data = City['traffic_commute_time_index']
+    form.pollution_index.data = City['pollution_index']
+    form.quality_sum.data = City['quality_sum']
+    Back = request.referrer or url_for('cities')
+    return render_template('detail_city.html',form=form,Back=Back)
+
+@app.route('/delete/city/<id>',methods=['GET'])
+@is_logged_in
+def delete_city(id):
+    try:
+        num_rows_deleted = db.session.query(City_db).filter_by(id=id).delete()
+        db.session.commit()
+        flash(f'Deleted {num_rows_deleted} city','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('cities'))
+
+@app.route('/reset/city',methods=['POST'])
+@is_logged_in
+def reset_city():
+    try:
+        num_rows_deleted = db.session.query(City_db).filter_by(author=session['username']).delete()
+        db.session.commit()
+        flash(f'Reset {num_rows_deleted} cities','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('dashboard'))
+
+"""-----------------------------------------------------------------------------
+        # state.py
+-----------------------------------------------------------------------------"""
 class StateForm(FlaskForm):
-    id = IntegerField('ID')
-    name = StringField('State')
-    abbreviation = StringField('Abbreviation')
-    capital = StringField('Capital')
-    taxfree = BooleanField('Tax Free?')
-    flattax = BooleanField('Flat Tax?')
-    taxbrackets = IntegerField('Tax Brackets')
-    lowrate = DecimalField('Low Rate')
-    highrate = DecimalField('High rate')
-    notes = TextAreaField('Notes')
-    author = StringField('Author')
+    id = IntegerField('ID *',[Optional()])
+    name = StringField('State *',[DataRequired()])
+    abbreviation = StringField('Abbreviation *',[DataRequired()])
+    capital = StringField('Capital',[Optional()])
+    taxfree = BooleanField('Tax Free',[Optional()])
+    flattax = BooleanField('Flat Tax',[Optional()])
+    taxbrackets = IntegerField('Tax Brackets',[Optional()])
+    lowrate = DecimalField('Low Rate (%)',[Optional()])
+    highrate = DecimalField('High Rate (%)',[Optional()])
+    notes = TextAreaField('Notes',[Optional()])
+    author = StringField('Author *',[Optional()])
 
 
-@app.route('/edit/state/<id>',methods=["GET","POST"])
+@app.route('/states')
+@is_logged_in
+def view_states():
+    res = db.session.query(State_db).filter_by(author='admin').all()
+    DataList = []
+    for result in res:
+        DataList.append(result.to_dict())
+    return render_template('view_states.html',_states=DataList)
+
+@app.route('/add/state',methods=['GET','POST'])
+@is_logged_in
+@is_admin
+def add_state():
+    form = StateForm()
+    if form.validate_on_submit():
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="state")
+        # return jsonify(response.json()) # debugging
+        if response.status_code == 200:
+            flash(f'Successfully added state','success')
+            return redirect(url_for('view_states'))
+        else:
+            flash(f'Unable to add state, status code {response.status_code}','warning')
+            return redirect(url_for('view_states'))
+    return render_template('add_state.html',form=form)
+
+@app.route('/edit/state/<id>',methods=['GET','POST'])
 @is_logged_in
 @is_admin
 def edit_state(id):
@@ -730,340 +860,681 @@ def edit_state(id):
     form.highrate.data = State['highrate']
     form.notes.data = State['notes']
     form.author.data = session['username']
-    if request.method == 'POST':
-        _data = dict(request.form)
-        # _id = _data.pop('id')
-        del_list = ['csrf_token','author']
-        for each in del_list:
-            del _data[each]
-        # y_to_boolean(_data)
-        try:
-            _data = only_updated_keys(State,_data)
-            # return jsonify({'_data':_data,'_id':_id}) # debugging
-            if not _data: return redirect(url_for('admin_panel'))
-            _ = db.session.query(State_db).filter_by(id=id).update(_data)
-            db.session.commit()
-            db_response = True
-        except:
-            db_response = False
-        if db_response:
+
+    if form.validate_on_submit():
+        # hack-y solution to disappearing check boxes...
+        _params = dict(request.form)
+        checkboxes = ['flattax','taxfree']
+        for box in checkboxes:
+            if box not in request.form.keys():
+                _params.update({box:'n'})
+
+        _params.pop('csrf_token')
+        _path = os.path.join(request.url_root,'api/state')
+        _headers = {'Token': session['api_request_token']}
+        response = HTTP.post(_path,params=_params,headers=_headers)
+        if response.status_code == 202:
             flash(f'Saved changes for {form.name.data}','success')
             return redirect(url_for('admin_panel'))
         else:
             flash(f'Unable to update {form.name.data}','warning')
             return redirect(url_for('admin_panel'))
-    return render_template('editstate.html',form=form)
+    return render_template('edit_state.html',form=form,Back=request.referrer or url_for('admin_panel'))
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/cities')
+@app.route('/detail/state/<id>',methods=['GET'])
 @is_logged_in
-def cities():
-    results = City_dbII.query.all()
-    CityList = []
-    Flag = True
-    if results:
-        for result in results:
-            CityList.append(result.to_dict())
-        Flag = False
-    return render_template('cities.html',Cities=CityList,Flag=Flag)
+def detail_state(id):
+    form = StateForm()
+    State = db.session.query(State_db).filter_by(id=id).first().to_dict()
+    form.name.data = State['name']
+    form.abbreviation.data = State['abbreviation']
+    form.capital.data = State['capital']
+    form.taxfree.data = State['taxfree']
+    form.flattax.data = State['flattax']
+    form.taxbrackets.data = State['taxbrackets']
+    form.lowrate.data = State['lowrate']
+    form.highrate.data = State['highrate']
+    form.notes.data = State['notes']
+    form.author.data = session['username']
+    Back = request.referrer or url_for('view_states')
+    return render_template('detail_state.html',form=form,Back=Back)
+
+@app.route('/delete/state/<id>',methods=['GET'])
+@is_logged_in
+@is_admin
+def delete_state(id):
+    try:
+        num_rows_deleted = db.session.query(State_db).filter_by(id=id).delete()
+        db.session.commit()
+        flash(f'Deleted {num_rows_deleted} state','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('view_states'))
+
+@app.route('/reset/states',methods=['POST'])
+@is_logged_in
+@is_admin
+def reset_states():
+    try:
+        num_rows_deleted = db.session.query(State_db).filter_by(author=session['username']).delete()
+        db.session.commit()
+        flash(f'Reset {num_rows_deleted} states','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('dashboard'))
+
+@app.route('/load/states',methods=['POST'])
+@is_logged_in
+@is_admin
+def load_states():
+    try:
+        passed, failed = loadStatesEnMasse(header_token=session['api_request_token'],debug=False)
+        flash(f'Successfully loaded {passed}/{failed} states from JSON','success')
+        return redirect(url_for('admin_panel'))
+    except:
+        flash('Unable to load states from JSON','warning')
+        return redirect(url_for('admin_panel'))
+
+"""-----------------------------------------------------------------------------
+        # job.py
+-----------------------------------------------------------------------------"""
+class JobForm(FlaskForm):
+    id = IntegerField('ID *')
+    author = StringField('Author *')
+    position = StringField('Position *', [DataRequired()])
+    level = StringField('Level', [Optional()])
+    company = StringField('Company *', [Length(min=1, max=200), DataRequired()])
+    city = StringField('City *', [Length(min=1, max=30), DataRequired()])
+    state = SelectField('State *', choices=get_states_from_db())
+    # state = SelectField('State *', choices=list(zip(get_state_abbreviations_from_json(), get_state_names_from_json())))
+    cotype = SelectField('Company Type', choices=[
+                                        ('',''),('pub','Public'),
+                                        ('priv','Private'),('np','Nonprofit'),
+                                        ('gov','Government'),('edu','Education'),
+                                        ('tp','3rd Party')],
+                                        validators=[Optional()])
+    salary = DecimalField('Salary',[Optional()])
+    link = StringField('Link', [Optional()])
+    contact = StringField('HR Contact', [Optional()])
+    hrtitle = StringField('HR Title', [Optional()])
+    phone = IntegerField('Phone #', [Optional()])
+    email = EmailField('HR Email',[Optional()])
+    description = TextAreaField('Description', [Optional()])
+    experience = TextAreaField('Experience', [Optional()])
+    notes = TextAreaField('Notes', [Optional()])
 
 
-"""-----------------------------------------------------------------------------"""
 @app.route('/jobs')
 @is_logged_in
 def jobs():
-    results = Job_db.query.all()
-    JobList = []
-    Flag = True
-    if results:
-        for result in results:
-            JobList.append(result.to_dict())
-        Flag = False
-    return render_template('jobs.html',Jobs=JobList,Flag=Flag)
+    res = Job_db.query.filter_by(author=session['username']).all()
+    DataList = []
+    if res:
+        for result in res:
+            DataList.append(result.to_dict())
+    return render_template('view_jobs.html',_data=DataList)
+
+@app.route('/add/job', methods=['GET','POST'])
+@is_logged_in
+def add_job():
+    form = JobForm()
+    if form.validate_on_submit():
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="job")
+        # return jsonify(response.json()) # debugging
+        if response.status_code == 200:
+            flash(f'Successfully added job','success')
+            return redirect(url_for('jobs'))
+        else:
+            flash(f'Unable to add job, status code {response.status_code}','warning')
+            return redirect(url_for('jobs'))
+    return render_template('add_job.html',form=form)
+
+@app.route('/detail/job/<id>', methods=['GET'])
+@is_logged_in
+def detail_job(id):
+    form = JobForm()
+    Data = db.session.query(Job_db).filter_by(id=id).first().to_dict()
+    form.id.data = Data['id']
+    form.author.data = Data['author']
+    form.position.data = Data['position']
+    form.level.data = Data['level']
+    form.company.data = Data['company']
+    form.city.data = Data['city']
+    form.state.data = Data['state']
+    form.cotype.data = Data['cotype']
+    form.salary.data = Data['salary']
+    form.link.data = Data['link']
+    form.contact.data = Data['contact']
+    form.hrtitle.data = Data['hrtitle']
+    form.phone.data = Data['phone']
+    form.email.data = Data['email']
+    form.description.data = Data['description']
+    form.experience.data = Data['experience']
+    form.notes.data = Data['notes']
+    return render_template('detail_job.html',form=form,Back=url_for('jobs'))
+
+@app.route('/edit/job/<id>', methods=['GET','POST'])
+@is_logged_in
+def edit_job(id):
+    form = JobForm()
+    Data = db.session.query(Job_db).filter_by(id=id).first().to_dict()
+    form.id.data = Data['id']
+    form.author.data = Data['author']
+    form.position.data = Data['position']
+    form.level.data = Data['level']
+    form.company.data = Data['company']
+    form.city.data = Data['city']
+    form.state.data = Data['state']
+    form.cotype.data = Data['cotype']
+    form.salary.data = Data['salary']
+    form.link.data = Data['link']
+    form.contact.data = Data['contact']
+    form.hrtitle.data = Data['hrtitle']
+    form.phone.data = Data['phone']
+    form.email.data = Data['email']
+    form.description.data = Data['description']
+    form.experience.data = Data['experience']
+    form.notes.data = Data['notes']
+    if form.validate_on_submit():
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="job")
+        # return jsonify(response.json()) # debugging
+        if response.status_code == 202:
+            flash(f'Saved changes','success')
+            return redirect(url_for('jobs'))
+        else:
+            flash(f'Unable to update job, status code {response.status_code}','warning')
+            return redirect(url_for('jobs'))
+    return render_template('edit_job.html',form=form,Back=url_for('jobs'))
+
+@app.route('/delete/job/<id>',methods=['GET'])
+@is_logged_in
+def delete_job(id):
+    try:
+        num_rows_deleted = db.session.query(Job_db).filter_by(id=id).delete()
+        db.session.commit()
+        flash(f'Deleted {num_rows_deleted} job','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('jobs'))
+
+@app.route('/reset/job',methods=['POST'])
+@is_logged_in
+def reset_job():
+    try:
+        num_rows_deleted = db.session.query(Job_db).filter_by(author=session['username']).delete()
+        db.session.commit()
+        flash(f'Reset {num_rows_deleted} jobs','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('dashboard'))
+
+"""-----------------------------------------------------------------------------
+        # interaction.py
+-----------------------------------------------------------------------------"""
+class InteractionForm(FlaskForm):
+    id = IntegerField('ID *')
+    author = StringField('Author *')
+    channel = RadioField('Channel *', validators=[DataRequired()],
+        choices=[('EMAIL', 'Email'), ('CALL', 'Call'), ('INTERVIEW', 'Interview'),
+                ('IRL', 'In-Person'), ('SOCIAL', 'Social Media')], default='EMAIL')
+    company = StringField('Company *', [Length(min=1, max=200), DataRequired()])
+    city = StringField('City *', [Length(min=1, max=30), DataRequired()])
+    summary = TextAreaField('Summary')
+    state = SelectField('State *', choices=get_states_from_db())
+    # state = SelectField('State *', choices=list(zip(get_state_abbreviations_from_json(), get_state_names_from_json())))
 
 
-"""-----------------------------------------------------------------------------"""
 @app.route('/interactions')
 @is_logged_in
 def interactions():
-    username = session['username']
-    result = []
-    res = Interaction_db.query.filter_by(username=username).all()
-    if len(res):
-        Flag = False
-        for _, r in enumerate(res):
-            result.append(r.to_dict())
-        for res in result:
-            for key in list(res.keys()):
-                if key != key.title():
-                    res.pop(key) # scrub result for non-capitalized keys (blacklist)
-    else:
-        Flag = True
-    return render_template('interactions.html',result=result,Flag=Flag)
-    # return jsonify({'result':result}) # debugging
+    res = Interaction_db.query.filter_by(author=session['username']).all()
+    DataList = []
+    if res:
+        for result in res:
+            DataList.append(result.to_dict())
+    return render_template('view_interactions.html',_data=DataList)
 
-
-"""-----------------------------------------------------------------------------"""
-class InteractionForm(FlaskForm):
-    Channel = RadioField('Channel', validators=[validators.DataRequired()],
-        choices=[('email', 'Email'), ('call', 'Call'), ('interview', 'Interview'), ('irl', 'In-Person'), ('social', 'Social Media')], default='email')
-    Company = StringField('Company', [validators.Length(min=1, max=200), validators.DataRequired()])
-    City = StringField('City', [validators.Length(min=1, max=30), validators.DataRequired()])
-    Summary = TextAreaField('Summary')
-    State = SelectField('State', choices=list(zip(get_state_abbreviations_from_json(), get_state_names_from_json())))
-
-
-@app.route('/addinteraction',methods=['GET','POST'])
+@app.route('/add/interaction',methods=['GET','POST'])
 @is_logged_in
-def addinteraction():
-    form = InteractionForm(request.form)
+def add_interaction():
+    form = InteractionForm()
     if form.validate_on_submit():
-        _data = form.data
-        _data['username'] = session['username']
-        del _data['csrf_token']
-        try:
-            cls = Interaction_db(**_data)
-            db.session.add(cls)
-            db.session.commit()
-            db_response = True
-        except:
-            db_response = False
-        # return jsonify({'_data':_data,'db_response':db_response}) # debugging
-        if db_response:
-            flash('Saved', 'success')
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="interaction")
+        # return jsonify(response.json()) # debugging
+        if response.status_code == 200:
+            flash(f'Saved changes','success')
             return redirect(url_for('interactions'))
         else:
-            flash('Server error','error')
-            return redirect(url_for('addinteraction'))
-    return render_template('addinteraction.html',form=form)
+            flash(f'Unable to add interaction, status code {response.status_code}','warning')
+            return redirect(url_for('interactions'))
+    return render_template('add_interaction.html',form=form)
 
-
-"""-----------------------------------------------------------------------------"""
-@app.route('/calendar')
+@app.route('/detail/interaction/<id>',methods=['GET','POST'])
 @is_logged_in
-def calendar():
-    return render_template('calendar.html')
+def detail_interaction(id):
+    form = InteractionForm()
+    Data = db.session.query(Interaction_db).filter_by(id=id).first().to_dict()
+    form.id.data = Data['id']
+    form.channel.data = Data['channel']
+    form.company.data = Data['company']
+    form.city.data = Data['city']
+    form.state.data = Data['state']
+    form.summary.data = Data['summary']
+    form.author.data = Data['author']
+    return render_template('detail_interaction.html',form=form,Back=url_for('interactions'))
 
+@app.route('/edit/interaction/<id>',methods=['GET','POST'])
+@is_logged_in
+def edit_interaction(id):
+    form = InteractionForm()
+    Data = db.session.query(Interaction_db).filter_by(id=id).first().to_dict()
+    form.id.data = Data['id']
+    form.author.data = Data['author']
+    form.channel.data = Data['channel']
+    form.company.data = Data['company']
+    form.city.data = Data['city']
+    form.state.data = Data['state']
+    form.summary.data = Data['summary']
+    if form.validate_on_submit():
+        response = execute_request(_request=request,
+                                    _method="POST",
+                                    _route="interaction")
+        # return jsonify(response.json()) # debugging
+        if response.status_code == 202:
+            flash(f'Saved changes','success')
+            return redirect(url_for('interactions'))
+        else:
+            flash(f'Unable to update interaction, status code {response.status_code}','warning')
+            return redirect(url_for('interactions'))
+    return render_template('edit_interaction.html',form=form,Back=request.referrer or url_for('interactions'))
 
-"""-----------------------------------------------------------------------------"""
+@app.route('/delete/interaction/<id>',methods=['GET'])
+@is_logged_in
+def delete_interaction(id):
+    try:
+        num_rows_deleted = db.session.query(Interaction_db).filter_by(id=id).delete()
+        db.session.commit()
+        flash(f'Deleted {num_rows_deleted} interaction','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('interactions'))
+
+@app.route('/reset/interaction',methods=['POST'])
+@is_logged_in
+def reset_interaction():
+    try:
+        num_rows_deleted = db.session.query(Interaction_db).filter_by(author=session['username']).delete()
+        db.session.commit()
+        flash(f'Reset {num_rows_deleted} interactions','success')
+    except:
+        db.session.rollback()
+        flash('Internal server error','info')
+    return redirect(url_for('dashboard'))
+
+"""-----------------------------------------------------------------------------
+        # errors.py
+-----------------------------------------------------------------------------"""
 @app.errorhandler(404)
 def not_found(e):
-    Back = request.referrer or url_for('index')
-    return render_template('404.html',Back=Back)
-
+    Back = request.referrer or url_for('view_states')
+    return render_template('error_404.html',Back=Back)
 
 @app.errorhandler(CSRFError)
 def csrf_error(reason):
     flash('Security alert','danger')
-    return render_template('csrf_error.html', reason=reason), 400
+    return render_template('error_csrf.html', reason=reason), 400
 
-"""-----------------------------------------------------------------------------"""
-# BETA
-@app.route('/beta')
-def beta():
-    return render_template('beta.html')
+"""-----------------------------------------------------------------------------
+        # handlers.py
+-----------------------------------------------------------------------------"""
+def type_conversion(dic,convert_to,lst):
 
-"""-----------------------------------------------------------------------------"""
-class ApiSplash(Resource):
-
-    def get(self):
-        return jsonify({
-                'host':'localhost:5000',
-                'endpoints':['/api/city','/api/job'],
-                'methods':['GET','POST'],
-                'classes':['cities','jobs','info','query'],
-                'message':'welcome, user!',
-                'token':'not required'
-                })
-    def post(self):
-        if bool(request.args):
-            return jsonify({
-                'data':request.args,
-                'path':{'url':request.url,
-                'encoded':urllib.parse.quote_plus(request.url)}
-                })
-        else:
-            return jsonify({'host':'localhost:5000',
-                    'endpoints':['/city','/job'],
-                    'methods':['GET','POST'],
-                    'message':'welcome, user!',
-                    'token':'not required'})
-
-
-class ApiCity(Resource):
-    def get(self):
-        data = request.args
-        keys = list(request.args.keys())
-        values = list(request.args.values())
-        return jsonify({'Data':data,'Keys':keys,'Values':values})
-
-    def post(self):
-        if not ''.join(list(request.args.values())):
-            return {'error':'empty request'}
-        requiredArgs = ['State','City']
-        db_keys = dict.fromkeys(list(City_dbII.__table__.columns.keys()))
-        user_keys = request.args.to_dict()
-        # Screen for required keys
-        for arg in requiredArgs:
-            if arg not in list(user_keys.keys()):
-                return {'error':'required args not present'}
-            else:
-                pass
-        # Remove non-capitalized columns (blacklist)
-        for arg in list(db_keys.keys()):
-            if arg != arg.title(): db_keys.pop(arg)
-        # Scrub user request
-        for arg in list(user_keys.keys()):
-            if arg not in list(db_keys.keys()): user_keys.pop(arg)
-        # Replace state abbreviation
-        user_keys['State'] = get_state_abbreviation(user_keys['State'])
+    def _string(arg):
         try:
-            cls = City_dbII(**user_keys)
+            return str(arg)
+        except:
+            pass
+
+    def _title(arg):
+        try:
+            return arg.title()
+        except:
+            pass
+
+    def _upper(arg):
+        try:
+            return arg.upper()
+        except:
+            pass
+
+    def _integer(arg):
+        if arg.isdigit():
+            return int(arg)
+        else:
+            pass
+
+    def _float(arg):
+        try:
+            return float(arg)
+        except:
+            pass
+
+    def _bool(arg):
+        try:
+            return strtobool(arg)
+        except:
+            pass
+
+    def _pass(arg):
+        return arg
+
+    switcher = {
+        'string': _string,
+        'title': _title,
+        'upper': _upper,
+        'integer': _integer,
+        'float': _float,
+        'bool': _bool,
+        'pass': _pass
+    }
+
+    func = switcher.get(convert_to, lambda: None)
+    for each in lst:
+        if each in dic:
+            dic[each] = func(dic[each])
+    return {k: v for k, v in dic.items() if v is not None}
+
+def validate_credentials(headr):
+    if 'Token' not in headr:
+        return False
+    header_token = str(headr.get('Token'))
+    res = User_db.query.filter_by(apitoken=header_token).first()
+    if not res:
+        return False
+    return res.to_dict()['username']
+
+def parse_post_request(_db,_request,_instr):
+    # Discard empty requests
+    if not _request.args: return {'Error':'Empty request'}, 400
+    # Validate request token
+    username = validate_credentials(_request.headers)
+    if not username: return {'Error':'Unauthorized request'}, 401
+    # Convert from immutable dictionary
+    _data = dict(_request.args)
+    # Remove invalid keys from request
+    valid_keys = reduce(operator.iconcat, _instr.values(), [])
+    for k in list(_data.keys()):
+        if k not in valid_keys:
+            del _data[k]
+    # Discard empty washed request
+    if not _data: return {'Error':'No valid keys request'}, 400
+    # Append author
+    _data['author'] = username
+    for k, v in _instr.items():
+        _data = type_conversion(dic=_data,convert_to=k,lst=v)
+    if 'id' not in _data:
+        try:
+            cls = _db(**_data)
             db.session.add(cls)
             db.session.commit()
-            db_response = True
+            db_response, _code = (True, 200)
         except:
-            db_response = False
-        return {'db_keys':db_keys,'user_keys':user_keys,'db_response':db_response}
-
-
-        # PROTOTYPE
-            # if City_dbII.query.first() is None:
-            #     return {'col names':list(City_dbII.__table__.columns.keys())}
-
-            # try:
-            #     valid_list = list(City_dbII.query.first().to_dict().keys())
-            # except:
-            #     return {'Error':'Could not query City DB because it is empty'}
-                # try:
-                #     db_response = False
-                #     cls = City_dbII({'City':''})
-                #     db.session.add(cls)
-                #     db.session.commit()
-                #     db_response = True
-                # except:
-                #     db_response = False
-                # return jsonify({'Error':'City DB is empty, Initializing null row.',
-                #         'DB Response':db_response})
-
-            # hidden_keys = ['id','created_at','modified_at']
-            # for thing in hidden_keys:
-                # if thing in valid_list: valid_list.remove(thing)
-            # valid_list is now good to compare against
-            # ** check to make sure City and State are present, otherwise Error. for now assume safe case
-            # user_keys = list(request.args.keys())
-            # >>> items = set([-1, 0, 1, 2])
-            # >>> set([1, 2]).issubset(items)
-            # user_filtered = {}
-            # for keey in user_keys:
-            #     if keey in valid_list:
-            #         # get the users data and add to dict
-            #         user_filtered[keey] = request.args[keey]
-            # Data, resp_msg = handleAddCityreq(user_filtered)
-            # check if city already exists in database, respond with error message, for now add new row
-            # q = City_db.query().first().filter(City_db.City == Data['City'])
-            # db_response = False
-            # try:
-            #     cls = City_dbII(**Data)
-            #     db.session.add(cls)
-            #     db.session.commit()
-            #     db_response = True
-            # except:
-            #     pass
-            # return jsonify({'valid keys':valid_list,
-            #                 'user keys':user_keys,
-            #                 'filtered request':Data,
-            #                 'db response':db_response,
-            #                 'function msg':resp_msg})
-
-
-def verify_api_token(_data):
-    _res = Users.query.filter_by(username=_data['username']).first()
-    if _res:
-        _res = _res.to_dict()
-        if _res['apitoken'] != _data['token']:
-            is_valid = False
-        else:
-            is_valid = True
+            db_response, _code = (False, 406)
     else:
-        is_valid = False
-    return is_valid
+        try:
+            _id = _data.pop('id')
+            # Validate author permission
+            res = db.session.query(_db).filter_by(id=_id).first()
+            if res:
+                original_author = res.to_dict()['author']
+            else:
+                raise ValueError('No entry exists for id')
+            if original_author == _data['author']:
+                _ = db.session.query(_db).filter_by(id=_id).update(_data)
+                db.session.commit()
+                db_response, _code = (True, 202)
+            else:
+                raise ValueError('User does not have edit rights to this entry')
+        except:
+            db_response, _code = (False, 409)
+    return {'data':_data,'db_response':db_response}, _code
+
+def echo_request(request,route):
+    try:
+        _echo = OrderedDict()
+        _echo['Route'] = os.path.join('/api',route)
+        _echo['Token'] = request.headers.get('Token') if 'Token' in request.headers else None
+        _echo['Data'] = request.args if request.args else None
+        _echo['Keys'] = list(request.args.keys()) if request.args else None
+        _echo['Values'] = list(request.args.values()) if request.args else None
+        if _echo['Token'] is None and 'Token' in request.args.keys():
+            _echo['Message'] = 'Token should be sent in request header'
+        elif 'Token' in request.headers.keys():
+            _echo['Message'] = 'Token acknowledged'
+        else:
+            _echo['Message'] = 'No token detected'
+    except:
+        _echo['Message'] = 'Unable to process request'
+    return _echo
+
+"""-----------------------------------------------------------------------------
+        # api.py
+-----------------------------------------------------------------------------"""
+class ApiCity(Resource):
+    def get(self):
+        return echo_request(request=request,route='city')
+
+    def post(self):
+        to_string = ['purchasing_power_index',
+                    'safety_index',
+                    'health_care_index',
+                    'climate_index',
+                    'cost_of_living_index',
+                    'property_price_to_income_ratio',
+                    'traffic_commute_time_index',
+                    'pollution_index',
+                    'quality_sum',
+                    'notes'
+                    ]
+        to_float = []
+        to_integer = ['id']
+        to_title = ['city']
+        to_upper = ['state']
+        to_bool = []
+        to_pass = ['author']
+
+        _instr = {
+            'string':to_string,
+            'float':to_float,
+            'integer':to_integer,
+            'title':to_title,
+            'upper':to_upper,
+            'bool':to_bool,
+            'pass':to_pass
+        }
+        resp, code = parse_post_request(_db=City_db,
+                                        _request=request,
+                                        _instr=_instr)
+        return resp, code
 
 
 class ApiJob(Resource):
     def get(self):
-        data = request.args
-        keys = list(request.args.keys())
-        values = list(request.args.values())
-        return jsonify({'Data':data,'Keys':keys,'Values':values})
+        return echo_request(request=request,route='job')
+
+    def post(self):
+        to_string = ['position',
+                    'level',
+                    'company',
+                    'link',
+                    'contact',
+                    'hrtitle',
+                    'email',
+                    'description',
+                    'experience',
+                    'notes'
+                    ]
+        to_float = ['salary']
+        to_integer = ['id','phone']
+        to_title = ['city']
+        to_upper = ['state','cotype']
+        to_bool = []
+        to_pass = ['author']
+
+        _instr = {
+            'string':to_string,
+            'float':to_float,
+            'integer':to_integer,
+            'title':to_title,
+            'upper':to_upper,
+            'bool':to_bool,
+            'pass':to_pass
+        }
+        resp, code = parse_post_request(_db=Job_db,
+                                        _request=request,
+                                        _instr=_instr)
+        return resp, code
+
+
+class ApiInteraction(Resource):
+    def get(self):
+        return echo_request(request=request,route='interaction')
+
+    def post(self):
+        to_string = ['summary','company','channel']
+        to_float = []
+        to_integer = ['id']
+        to_title = ['name','city']
+        to_upper = ['abbreviation','state']
+        to_bool = []
+        to_pass = ['author']
+
+        _instr = {
+            'string':to_string,
+            'float':to_float,
+            'integer':to_integer,
+            'title':to_title,
+            'upper':to_upper,
+            'bool':to_bool,
+            'pass':to_pass
+        }
+        resp, code = parse_post_request(_db=Interaction_db,
+                                        _request=request,
+                                        _instr=_instr)
+        return resp, code
 
 
 class ApiState(Resource):
     def get(self):
-        data = request.args
-        keys = list(request.args.keys())
-        values = list(request.args.values())
-        return jsonify({'Data':data,'Keys':keys,'Values':values})
-    
+        return echo_request(request=request,route='state')
+
     def post(self):
-        data = request.args
-        if not bool(data): return {'error':'empty request'}
-        # make sure admin token is present and valid, del from dict
-        # return jsonify({'Data':data,'Keys':list(request.args.keys()),'Values':list(request.args.values()),'Boolean':bool(data)}) # debugging
-        try:
-            cls = State_db(**data)
-            db.session.add(cls)
-            db.session.commit()
-            db_response = True
-        except:
-            db_response = False
-        return {'data':data,'db_response':db_response}
+        to_string = ['notes']
+        to_float = ['highrate','lowrate']
+        to_integer = ['id','taxbrackets']
+        to_title = ['name','capital']
+        to_upper = ['abbreviation']
+        to_bool = ['taxfree','flattax']
+        to_pass = ['author']
+
+        _instr = {
+            'string':to_string,
+            'float':to_float,
+            'integer':to_integer,
+            'title':to_title,
+            'upper':to_upper,
+            'bool':to_bool,
+            'pass':to_pass
+        }
+        resp, code = parse_post_request(_db=State_db,
+                                        _request=request,
+                                        _instr=_instr)
+        return resp, code
 
 
 class ApiAuth(Resource):
     def get(self):
-        _req = request.args.to_dict()
-        try:
-            _data = {key:_req[key] for key in ['apitoken','username']}
-        except:
-            return {'route':'auth','response':'1 or more required keys missing'}, 400
-        if verify_api_token(_data):
-            return {'route':'auth','response':'verified'}, 202
-        else:
-            return {'route':'auth','response':'false'}, 406
+        return echo_request(request=request,route='auth')
 
-"""-----------------------------------------------------------------------------"""
-api.add_resource(ApiSplash, '/api')
+    def post(self):
+        if validate_credentials(request.headers) or validate_credentials(request.args):
+            return {'response':True}, 200
+        else:
+            return {'response':False}, 410
+
+
+"""-----------------------------------------------------------------------------
+        # resources.py
+-----------------------------------------------------------------------------"""
+api.add_resource(ApiInteraction, '/api/interaction')
 api.add_resource(ApiCity, '/api/city')
 api.add_resource(ApiJob, '/api/job')
 api.add_resource(ApiState, '/api/state')
 api.add_resource(ApiAuth, '/api/auth')
 
-"""-----------------------------------------------------------------------------"""
+"""-----------------------------------------------------------------------------
+        # setup.py
+-----------------------------------------------------------------------------"""
 # CREATE ADMIN
 def initialize_admin():
-    result = Users.query.filter_by(name='admin').first()
+    result = User_db.query.filter_by(name='admin').first()
     if result is None:
         _data = {'name':'admin',
                 'email':os.environ.get('TRABA_EMAIL'),
                 'username':'admin',
-                'password':sha256_crypt.encrypt(str(os.environ.get('TRABA_PASSW'))),
+                # 'password':sha256_crypt.encrypt(str(os.environ.get('TRABA_PASSW'))),
+                'password':sha256_crypt.encrypt(str('!!')),
                 'is_admin':True,
                 }
-        cls = Users(**_data)
+        cls = User_db(**_data)
         db.session.add(cls)
         db.session.commit()
         app.logger.info(' * ADMIN CREATED')
     else:
+        app.logger.info(' * ADMIN UNABLE TO BE CREATED')
         pass
 
-"""-----------------------------------------------------------------------------"""
+# CREATE TESTER
+def initialize_tester():
+    result = User_db.query.filter_by(name='tester').first()
+    if result is None:
+        _data = {'name':'tester',
+                'email':'test@test.test',
+                'username':'tester',
+                # 'password':sha256_crypt.encrypt(str(os.environ.get('TRABA_PASSW'))),
+                'password':sha256_crypt.encrypt(str('!!')),
+                'is_admin':False,
+                }
+        cls = User_db(**_data)
+        db.session.add(cls)
+        db.session.commit()
+        app.logger.info(' * TESTER CREATED')
+    else:
+        app.logger.info(' * TESTER UNABLE TO BE CREATED')
+        pass
+
+"""-----------------------------------------------------------------------------
+        # run.py
+-----------------------------------------------------------------------------"""
 if __name__ == '__main__':
     CreateDB()
     initialize_admin()
+    initialize_tester()
     app.host = '0.0.0.0'
     app.port = 5000
     app.debug = True
     app.run()
 
+
+# end of script

@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+{% block body %}
+
+<!-- GENERATE NEW API TOKEN + COPY CURRENT TOKEN -->
+<script>
+	function myCopyText() {
+		/* Get the text field */
+		var copyText = document.getElementById("_token");
+		/* Select the text field */
+		copyText.select();
+		/* Copy the text inside the text field */
+		document.execCommand("copy");
+		/* Alert the copied text */
+		alert("Copied text to clipboard: " + copyText.value);
+	}
+</script>
+
+<div class="container">
+	<div class="row justify-content-center align-items-center">
+		<div class="col col-md-8">
+
+			<h2>Settings</h2>
+			<hr>
+
+			<div class="form-group">
+				<div class="form-group">
+					<small>
+						<label for="usr">Base URL</label>
+					</small>
+					<input type="text" class="form-control" id="_url" value="{{request.url_root}}" disabled>
+				</div>
+				<small>
+					<label for="usr">API Token</label>
+				</small>
+				<samp><input type="text" class="form-control mb-2" id="_token" value="{{session['api_request_token']}}"
+						disabled></samp>
+
+				<div class="row">
+					<div class="col">
+						<form action="">
+							<button class="btn btn-outline-primary btn-block" type="button" onclick="myCopyText()">Copy
+								Text</button>
+						</form>
+					</div>
+					<div class="col">
+						<form action="{{ url_for('new_token') }}" id="_regenerate" method="post" name="myForm"
+							target="hiddenFrame">
+							<button class="btn btn-outline-secondary btn-block" type="submit">Regenerate</button>
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<small>
+					<label for="usr">Username</label>
+				</small>
+				<input type="text" class="form-control" id="_name" value="{{session['username']}}" disabled>
+			</div>
+			<div class="form-group">
+				<small>
+					<label for="usr">Name</label>
+				</small>
+				<input type="text" class="form-control" id="_username" value="{{session['name']}}" disabled>
+			</div>
+			<div class="form-group">
+				<small>
+					<label for="usr">Email</label>
+				</small>
+				<input type="text" class="form-control" id="_email" value="{{session['email']}}" disabled>
+			</div>
+			<hr>
+			<div class="row">
+				<div class="col">
+					<form action="{{url_for('reset_city')}}" method="post">
+						<input type="hidden" name="_method" value="DELETE">
+						<input type="submit" value="Reset Cities" class="btn btn-outline-danger btn-block">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+					</form>
+				</div>
+				<div class="col">
+					<form action="{{url_for('reset_job')}}" method="post">
+						<input type="hidden" name="_method" value="DELETE">
+						<input type="submit" value="Reset Jobs" class="btn btn-outline-danger btn-block">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+					</form>
+				</div>
+				<div class="col">
+					<form action="{{url_for('reset_interaction')}}" method="post">
+						<input type="hidden" name="_method" value="DELETE">
+						<input type="submit" value="Reset Interactions" class="btn btn-outline-danger btn-block">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+					</form>
+				</div>
+			</div>
+			<hr>
+		</div>
+	</div>
+</div>
+
+
+<!-- use this to freeze redirect for background form submission -->
+<!-- <iframe name="hiddenFrame" width="0" height="0" border="0" style="display: none;"></iframe> -->
+{% endblock %}
