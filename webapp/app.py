@@ -46,15 +46,15 @@ from wtforms.validators import (
     ValidationError, InputRequired, Optional
 )
 from passlib.hash import sha256_crypt
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect, CSRFError
-
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from data.data_import import (
     get_state_names_from_json,
     get_state_abbreviations_from_json,
     get_state_abbreviation,
-    loadStatesEnMasse
+    loadStatesEnMasse,
+    loadCitiesEnMasse
 )
 
 """-----------------------------------------------------------------------------
@@ -301,6 +301,24 @@ def is_logged_out(f):
         else:
             flash('This action is not available while logged in', 'info')
             return redirect(url_for('dashboard'))
+    return wrap
+
+# Check if user is author of row
+def is_author_of(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'nonexistant_parameter' in session:
+            return f(*args, **kwargs)
+        else:
+            # flash('@is_author_of else condition', 'info')
+            # return redirect(url_for('index'))
+            _args = []
+            for arg in args:
+                _args.append(arg)
+            _dict = {}
+            for k, v in kwargs.items():
+                _dict[k] = v
+            return jsonify({'_args':_args,'_dict':_dict})
     return wrap
 
 """-----------------------------------------------------------------------------
@@ -675,6 +693,11 @@ def dashboard():
 def calendar():
     return render_template('user_calendar.html')
 
+@app.route('/beta')
+@is_logged_in
+@is_author_of
+def beta():
+    return jsonify({'Response':'My response message'})
 """-----------------------------------------------------------------------------
         # city.py
 -----------------------------------------------------------------------------"""
@@ -787,17 +810,33 @@ def delete_city(id):
         flash('Internal server error','info')
     return redirect(url_for('cities'))
 
+@app.route('/load/cities',methods=['POST'])
+@is_logged_in
+@is_admin
+def load_cities():
+    try:
+        passed, failed = loadCitiesEnMasse(header_token=session['api_request_token'],debug=False)
+        flash(f'Successfully loaded {passed}/{failed} cities from JSON','success')
+        return redirect(url_for('admin_panel'))
+    except:
+        flash('Unable to load cities from JSON','warning')
+        return redirect(url_for('admin_panel'))
+
 @app.route('/reset/city',methods=['POST'])
 @is_logged_in
 def reset_city():
     try:
-        num_rows_deleted = db.session.query(City_db).filter_by(author=session['username']).delete()
+        username = session['username']
+        if username == 'admin':
+            num_rows_deleted = db.session.query(City_db).delete()
+        else:
+            num_rows_deleted = db.session.query(City_db).filter_by(author=username).delete()
         db.session.commit()
         flash(f'Reset {num_rows_deleted} cities','success')
     except:
         db.session.rollback()
         flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('admin_panel')) if username == 'admin' else redirect(url_for('dashboard'))
 
 """-----------------------------------------------------------------------------
         # state.py
@@ -917,13 +956,17 @@ def delete_state(id):
 @is_admin
 def reset_states():
     try:
-        num_rows_deleted = db.session.query(State_db).filter_by(author=session['username']).delete()
+        username = session['username']
+        if username == 'admin':
+            num_rows_deleted = db.session.query(State_db).delete()
+        else:
+            num_rows_deleted = db.session.query(State_db).filter_by(author=username).delete()
         db.session.commit()
         flash(f'Reset {num_rows_deleted} states','success')
     except:
         db.session.rollback()
         flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('admin_panel')) if username == 'admin' else redirect(url_for('dashboard'))
 
 @app.route('/load/states',methods=['POST'])
 @is_logged_in
@@ -1068,13 +1111,17 @@ def delete_job(id):
 @is_logged_in
 def reset_job():
     try:
-        num_rows_deleted = db.session.query(Job_db).filter_by(author=session['username']).delete()
+        username = session['username']
+        if username == 'admin':
+            num_rows_deleted = db.session.query(Job_db).delete()
+        else:
+            num_rows_deleted = db.session.query(Job_db).filter_by(author=username).delete()
         db.session.commit()
         flash(f'Reset {num_rows_deleted} jobs','success')
     except:
         db.session.rollback()
         flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('admin_panel')) if username == 'admin' else redirect(url_for('dashboard'))
 
 """-----------------------------------------------------------------------------
         # interaction.py
@@ -1174,13 +1221,17 @@ def delete_interaction(id):
 @is_logged_in
 def reset_interaction():
     try:
-        num_rows_deleted = db.session.query(Interaction_db).filter_by(author=session['username']).delete()
+        username = session['username']
+        if username == 'admin':
+            num_rows_deleted = db.session.query(Interaction_db).delete()
+        else:
+            num_rows_deleted = db.session.query(Interaction_db).filter_by(author=session['username']).delete()
         db.session.commit()
         flash(f'Reset {num_rows_deleted} interactions','success')
     except:
         db.session.rollback()
         flash('Internal server error','info')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('admin_panel')) if username == 'admin' else redirect(url_for('dashboard'))
 
 """-----------------------------------------------------------------------------
         # errors.py
@@ -1469,9 +1520,9 @@ class ApiAuth(Resource):
 
     def post(self):
         if validate_credentials(request.headers) or validate_credentials(request.args):
-            return {'response':True}, 200
+            return {'Response':True}, 200
         else:
-            return {'response':False}, 410
+            return {'Response':False}, 410
 
 
 """-----------------------------------------------------------------------------

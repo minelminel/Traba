@@ -1,312 +1,436 @@
 {
     "Albany, NY": {
-        "State": "NY",
-        "City": "Albany",
-        "xxxx": ""
+        "state": "NY",
+        "city": "Albany",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Albuquerque, NM": {
-        "State": "NM",
-        "City": "Albuquerque",
-        "xxxx": ""
+        "state": "NM",
+        "city": "Albuquerque",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Amarillo, TX": {
-        "State": "TX",
-        "City": "Amarillo",
-        "xxxx": ""
+        "state": "TX",
+        "city": "Amarillo",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Anchorage, AK": {
-        "State": "AK",
-        "City": "Anchorage",
-        "xxxx": ""
+        "state": "AK",
+        "city": "Anchorage",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Asheville, NC": {
-        "State": "NC",
-        "City": "Asheville",
-        "xxxx": ""
+        "state": "NC",
+        "city": "Asheville",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Atlanta, GA": {
-        "State": "GA",
-        "City": "Atlanta",
-        "xxxx": ""
+        "state": "GA",
+        "city": "Atlanta",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Austin, TX": {
-        "State": "TX",
-        "City": "Austin",
-        "xxxx": ""
+        "state": "TX",
+        "city": "Austin",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Baltimore, MD": {
-        "State": "MD",
-        "City": "Baltimore",
-        "xxxx": ""
+        "state": "MD",
+        "city": "Baltimore",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Boise, ID": {
-        "State": "ID",
-        "City": "Boise",
-        "xxxx": ""
+        "state": "ID",
+        "city": "Boise",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Boston, MA": {
-        "State": "MA",
-        "City": "Boston",
-        "xxxx": ""
+        "state": "MA",
+        "city": "Boston",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Boulder, CO": {
-        "State": "CO",
-        "City": "Boulder",
-        "xxxx": ""
+        "state": "CO",
+        "city": "Boulder",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Brooklyn, NY": {
-        "State": "NY",
-        "City": "Brooklyn",
-        "xxxx": ""
+        "state": "NY",
+        "city": "Brooklyn",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Buffalo, NY": {
-        "State": "NY",
-        "City": "Buffalo",
-        "xxxx": ""
+        "state": "NY",
+        "city": "Buffalo",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Charlotte, NC": {
-        "State": "NC",
-        "City": "Charlotte",
-        "xxxx": ""
+        "state": "NC",
+        "city": "Charlotte",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Chicago, IL": {
-        "State": "IL",
-        "City": "Chicago",
-        "xxxx": ""
+        "state": "IL",
+        "city": "Chicago",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Cincinnati, OH": {
-        "State": "OH",
-        "City": "Cincinnati",
-        "xxxx": ""
+        "state": "OH",
+        "city": "Cincinnati",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Cleveland, OH": {
-        "State": "OH",
-        "City": "Cleveland",
-        "xxxx": ""
+        "state": "OH",
+        "city": "Cleveland",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Columbus, OH": {
-        "State": "OH",
-        "City": "Columbus",
-        "xxxx": ""
+        "state": "OH",
+        "city": "Columbus",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Dallas, TX": {
-        "State": "TX",
-        "City": "Dallas",
-        "xxxx": ""
+        "state": "TX",
+        "city": "Dallas",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Denver, CO": {
-        "State": "CO",
-        "City": "Denver",
-        "xxxx": ""
+        "state": "CO",
+        "city": "Denver",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Eugene, OR": {
-        "State": "OR",
-        "City": "Eugene",
-        "xxxx": ""
+        "state": "OR",
+        "city": "Eugene",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Fresno, CA": {
-        "State": "CA",
-        "City": "Fresno",
-        "xxxx": ""
+        "state": "CA",
+        "city": "Fresno",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Honolulu, HI": {
-        "State": "HI",
-        "City": "Honolulu",
-        "xxxx": ""
+        "state": "HI",
+        "city": "Honolulu",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Houston, TX": {
-        "State": "TX",
-        "City": "Houston",
-        "xxxx": ""
+        "state": "TX",
+        "city": "Houston",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Indianapolis, IN": {
-        "State": "IN",
-        "City": "Indianapolis",
-        "xxxx": ""
+        "state": "IN",
+        "city": "Indianapolis",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Jacksonville, FL": {
-        "State": "FL",
-        "City": "Jacksonville",
-        "xxxx": ""
+        "state": "FL",
+        "city": "Jacksonville",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
-    "Kansas City, MO": {
-        "State": "MO",
-        "City": "Kansas City",
-        "xxxx": ""
+    "Kansas city, MO": {
+        "state": "MO",
+        "city": "Kansas city",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Knoxville, TN": {
-        "State": "TN",
-        "City": "Knoxville",
-        "xxxx": ""
+        "state": "TN",
+        "city": "Knoxville",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Las Vegas, NV": {
-        "State": "NV",
-        "City": "Las Vegas",
-        "xxxx": ""
+        "state": "NV",
+        "city": "Las Vegas",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Little Rock, AR": {
-        "State": "AR",
-        "City": "Little Rock",
-        "xxxx": ""
+        "state": "AR",
+        "city": "Little Rock",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Los Angeles, CA": {
-        "State": "CA",
-        "City": "Los Angeles",
-        "xxxx": ""
+        "state": "CA",
+        "city": "Los Angeles",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Louisville, KY": {
-        "State": "KY",
-        "City": "Louisville",
-        "xxxx": ""
+        "state": "KY",
+        "city": "Louisville",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Madison, WI": {
-        "State": "WI",
-        "City": "Madison",
-        "xxxx": ""
+        "state": "WI",
+        "city": "Madison",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Memphis, TN": {
-        "State": "TN",
-        "City": "Memphis",
-        "xxxx": ""
+        "state": "TN",
+        "city": "Memphis",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Miami, FL": {
-        "State": "FL",
-        "City": "Miami",
-        "xxxx": ""
+        "state": "FL",
+        "city": "Miami",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Milwaukee, WI": {
-        "State": "WI",
-        "City": "Milwaukee",
-        "xxxx": ""
+        "state": "WI",
+        "city": "Milwaukee",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Minneapolis, MN": {
-        "State": "MN",
-        "City": "Minneapolis",
-        "xxxx": ""
+        "state": "MN",
+        "city": "Minneapolis",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Nashville, TN": {
-        "State": "TN",
-        "City": "Nashville",
-        "xxxx": ""
+        "state": "TN",
+        "city": "Nashville",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "New York, NY": {
-        "State": "NY",
-        "City": "New York",
-        "xxxx": ""
+        "state": "NY",
+        "city": "New York",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Oakland, CA": {
-        "State": "CA",
-        "City": "Oakland",
-        "xxxx": ""
+        "state": "CA",
+        "city": "Oakland",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Orlando, FL": {
-        "State": "FL",
-        "City": "Orlando",
-        "xxxx": ""
+        "state": "FL",
+        "city": "Orlando",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Philadelphia, PA": {
-        "State": "PA",
-        "City": "Philadelphia",
-        "xxxx": ""
+        "state": "PA",
+        "city": "Philadelphia",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Phoenix, AZ": {
-        "State": "AZ",
-        "City": "Phoenix",
-        "xxxx": ""
+        "state": "AZ",
+        "city": "Phoenix",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Pittsburgh, PA": {
-        "State": "PA",
-        "City": "Pittsburgh",
-        "xxxx": ""
+        "state": "PA",
+        "city": "Pittsburgh",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Portland, OR": {
-        "State": "OR",
-        "City": "Portland",
-        "xxxx": ""
+        "state": "OR",
+        "city": "Portland",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Raleigh, NC": {
-        "State": "NC",
-        "City": "Raleigh",
-        "xxxx": ""
+        "state": "NC",
+        "city": "Raleigh",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Reno, NV": {
-        "State": "NV",
-        "City": "Reno",
-        "xxxx": ""
+        "state": "NV",
+        "city": "Reno",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Richmond, VA": {
-        "State": "VA",
-        "City": "Richmond",
-        "xxxx": ""
+        "state": "VA",
+        "city": "Richmond",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Rochester, NY": {
-        "State": "NY",
-        "City": "Rochester",
-        "xxxx": ""
+        "state": "NY",
+        "city": "Rochester",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Sacramento, CA": {
-        "State": "CA",
-        "City": "Sacramento",
-        "xxxx": ""
+        "state": "CA",
+        "city": "Sacramento",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Saint Louis, MO": {
-        "State": "MO",
-        "City": "Saint Louis",
-        "xxxx": ""
+        "state": "MO",
+        "city": "Saint Louis",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
-    "Salt Lake City, UT": {
-        "State": "UT",
-        "City": "Salt Lake City",
-        "xxxx": ""
+    "Salt Lake city, UT": {
+        "state": "UT",
+        "city": "Salt Lake city",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "San Antonio, TX": {
-        "State": "TX",
-        "City": "San Antonio",
-        "xxxx": ""
+        "state": "TX",
+        "city": "San Antonio",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "San Diego, CA": {
-        "State": "CA",
-        "City": "San Diego",
-        "xxxx": ""
+        "state": "CA",
+        "city": "San Diego",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "San Francisco, CA": {
-        "State": "CA",
-        "City": "San Francisco",
-        "xxxx": ""
+        "state": "CA",
+        "city": "San Francisco",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "San Jose, CA": {
-        "State": "CA",
-        "City": "San Jose",
-        "xxxx": ""
+        "state": "CA",
+        "city": "San Jose",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Seattle, WA": {
-        "State": "WA",
-        "City": "Seattle",
-        "xxxx": ""
+        "state": "WA",
+        "city": "Seattle",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Tacoma, WA": {
-        "State": "WA",
-        "City": "Tacoma",
-        "xxxx": ""
+        "state": "WA",
+        "city": "Tacoma",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Tampa, FL": {
-        "State": "FL",
-        "City": "Tampa",
-        "xxxx": ""
+        "state": "FL",
+        "city": "Tampa",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Tucson, AZ": {
-        "State": "AZ",
-        "City": "Tucson",
-        "xxxx": ""
+        "state": "AZ",
+        "city": "Tucson",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Tulsa, OK": {
-        "State": "OK",
-        "City": "Tulsa",
-        "xxxx": ""
+        "state": "OK",
+        "city": "Tulsa",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     },
     "Washington, DC": {
-        "State": "DC",
-        "City": "Washington",
-        "xxxx": ""
+        "state": "DC",
+        "city": "Washington",
+        "xxxx": "",
+        "xxx": "",
+        "x": ""
     }
 }

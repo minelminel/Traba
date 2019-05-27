@@ -1,10 +1,10 @@
 {% extends 'layout.html' %}
-
 {% block body %}
 
 <h2>Traba API 🌐</h2>
 <hr>
 
+<!-- TOP INFO BAR -->
 <div class="row row-responsive">
 	<div class="col">
 		<div class="card">
@@ -45,114 +45,569 @@
 	</div>
 </div>
 
-<div class="row mt-4">
+<!-- ROW 1 -->
+<div class="row row-responsive">
 	<div class="col">
-		<div class="card">
-			<div class="card-header">
-				/api/auth
-			</div>
-			<div class="card-body">
-				<!-- <h5 class="card-title">Special title treatment</h5> -->
-				<p class="card-text">
-					<div class="row">
-						<div class="col">
-							<h5 class="card-title">GET</h5>
-							<p>
-								Requests are echoed in a uniform format. <kbd>Route</kbd> is the url extension to which the request
-								is send. <kbd>Token</kbd> is the user supplied token, which should be placed in the request header.
-								If the token is placed in the request parameters instead of the header, a message is
-								returned informing the user of this fact. <kbd>Keys</kbd> are simply the request parameter keys, in
-								the same way <kbd>Values</kbd> are parameter values. These attributes are not modified in any way
-								from the originating request and are simply present to allow users to test and debug
-								their functions. <kbd>Message</kbd> is a simple response from the server informing the user of any
-								potential issues with their request.
-							</p>
+		<div class="container">
+			<div class="row mt-4">
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<samp>
+								<h4><a href="/api/auth">api/auth</a></h4>
+							</samp>
 						</div>
-						<div class="col">
-							<h5 class="card-title">POST</h5>
-							<p>
-								Requests will return a boolean response indicating whether or not the supplied token is
-								valid. <kbd>Token</kbd> should be placed in the request header, although validation will still be
-								attempted if placed in the parameters. However, for all other routes the token should be
-								placed in the header, and requests differing from this format will not be accepted.
+						<div class="card-body">
+							<!-- <h5 class="card-title">Special title treatment</h5> -->
+							<p class="card-text">
+								<div class="row">
+
+									<div class="col">
+										<h5 class="card-title">GET</h5>
+										<div>
+											<p>
+												Requests are echoed in a uniform format. Route is the url
+												extension
+												to
+												which
+												the request
+												is send. Token is the user supplied token, which should
+												be placed
+												in
+												the
+												request header.
+												If the token is placed in the request parameters instead of the
+												header, a
+												message is
+												returned informing the user of this fact. Keys are simply
+												the
+												request
+												parameter keys, in
+												the same way Values are parameter values. These
+												attributes are
+												not
+												modified
+												in any way
+												from the originating request and are simply present to allow users
+												to test
+												and
+												debug
+												their functions. Message is a simple response from the
+												server
+												informing
+												the
+												user of any
+												potential issues with their request.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+													<kbd>*</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Route</kbd>
+													<kbd>Token</kbd>
+													<kbd>Data</kbd>
+													<kbd>Keys</kbd>
+													<kbd>Values</kbd>
+													<kbd>Message</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="col">
+										<h5 class="card-title">POST</h5>
+										<div>
+											<p>
+												Requests will return a boolean response indicating whether or not
+												the
+												supplied
+												token
+												is
+												valid. Token should be placed in the request header,
+												although
+												validation
+												will
+												still be
+												attempted if placed in the parameters. However, for all other routes
+												the
+												token
+												should be
+												placed in the header, and requests differing from this format will
+												not be
+												accepted.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-4">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-4">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Data</kbd>
+													<kbd>DB_Response</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+
+
+								</div>
 							</p>
 						</div>
 					</div>
-				</p>
+				</div>
 			</div>
 		</div>
+
+	</div>
+	<div class="col">
+		<div class="container">
+			<div class="row mt-4">
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<samp>
+								<h4><a href="/api/job">api/job</a></h4>
+							</samp>
+						</div>
+						<div class="card-body">
+							<!-- <h5 class="card-title">Special title treatment</h5> -->
+							<p class="card-text">
+								<div class="row">
+
+									<div class="col">
+										<h5 class="card-title">GET</h5>
+										<div>
+											<p>
+												Requests are echoed in a uniform format. Route is the url
+												extension
+												to
+												which
+												the request
+												is send. Token is the user supplied token, which should
+												be placed
+												in
+												the
+												request header.
+												If the token is placed in the request parameters instead of the
+												header, a
+												message is
+												returned informing the user of this fact. Keys are simply
+												the
+												request
+												parameter keys, in
+												the same way Values are parameter values. These
+												attributes are
+												not
+												modified
+												in any way
+												from the originating request and are simply present to allow users
+												to test
+												and
+												debug
+												their functions. Message is a simple response from the
+												server
+												informing
+												the
+												user of any
+												potential issues with their request.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+													<kbd>*</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Route</kbd>
+													<kbd>Token</kbd>
+													<kbd>Data</kbd>
+													<kbd>Keys</kbd>
+													<kbd>Values</kbd>
+													<kbd>Message</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="col">
+										<h5 class="card-title">POST</h5>
+										<div>
+											<p>
+												Requests will return a boolean response indicating whether or not
+												the
+												supplied
+												token
+												is
+												valid. Token should be placed in the request header,
+												although
+												validation
+												will
+												still be
+												attempted if placed in the parameters. However, for all other routes
+												the
+												token
+												should be
+												placed in the header, and requests differing from this format will
+												not be
+												accepted.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Data</kbd>
+													<kbd>DB_Response</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+
+
+								</div>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 </div>
 
-<div class="row mt-4">
+<!-- ROW 2 -->
+<div class="row row-responsive">
 	<div class="col">
-		<div class="card">
-			<div class="card-header">
-				/api/city
-			</div>
-			<div class="card-body">
-				<!-- <h5 class="card-title">Special title treatment</h5> -->
-				<p class="card-text">
-					<samp>
-						Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-						the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
-						of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-						but also the leap into electronic typesetting, remaining essentially unchanged. It was
-						popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-						and more recently with desktop publishing software like Aldus PageMaker including versions of
-						Lorem Ipsum.
-					</samp>
-				</p>
-			</div>
-		</div>
-	</div>
-</div>
+		<div class="container">
+			<div class="row mt-4">
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<samp>
+								<h4><a href="/api/city">api/city</a></h4>
+							</samp>
+						</div>
+						<div class="card-body">
+							<!-- <h5 class="card-title">Special title treatment</h5> -->
+							<p class="card-text">
+								<div class="row">
 
-<div class="row mt-4">
-	<div class="col">
-		<div class="card">
-			<div class="card-header">
-				/api/job
-			</div>
-			<div class="card-body">
-				<!-- <h5 class="card-title">Special title treatment</h5> -->
-				<p class="card-text">
-					<samp>
-						Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-						the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
-						of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-						but also the leap into electronic typesetting, remaining essentially unchanged. It was
-						popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-						and more recently with desktop publishing software like Aldus PageMaker including versions of
-						Lorem Ipsum.
-					</samp>
-				</p>
-			</div>
-		</div>
-	</div>
-</div>
+									<div class="col">
+										<h5 class="card-title">GET</h5>
+										<div>
+											<p>
+												Requests are echoed in a uniform format. Route is the url
+												extension
+												to
+												which
+												the request
+												is send. Token is the user supplied token, which should
+												be placed
+												in
+												the
+												request header.
+												If the token is placed in the request parameters instead of the
+												header, a
+												message is
+												returned informing the user of this fact. Keys are simply
+												the
+												request
+												parameter keys, in
+												the same way Values are parameter values. These
+												attributes are
+												not
+												modified
+												in any way
+												from the originating request and are simply present to allow users
+												to test
+												and
+												debug
+												their functions. Message is a simple response from the
+												server
+												informing
+												the
+												user of any
+												potential issues with their request.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+													<kbd>*</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Route</kbd>
+													<kbd>Token</kbd>
+													<kbd>Data</kbd>
+													<kbd>Keys</kbd>
+													<kbd>Values</kbd>
+													<kbd>Message</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
 
-<div class="row mt-4">
-	<div class="col">
-		<div class="card">
-			<div class="card-header">
-				/api/interaction
-			</div>
-			<div class="card-body">
-				<!-- <h5 class="card-title">Special title treatment</h5> -->
-				<p class="card-text">
-					<samp>
-						Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
-						the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
-						of type and scrambled it to make a type specimen book. It has survived not only five centuries,
-						but also the leap into electronic typesetting, remaining essentially unchanged. It was
-						popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-						and more recently with desktop publishing software like Aldus PageMaker including versions of
-						Lorem Ipsum.
-					</samp>
-				</p>
+									<div class="col">
+										<h5 class="card-title">POST</h5>
+										<div>
+											<p>
+												Requests will return a boolean response indicating whether or not
+												the
+												supplied
+												token
+												is
+												valid. Token should be placed in the request header,
+												although
+												validation
+												will
+												still be
+												attempted if placed in the parameters. However, for all other routes
+												the
+												token
+												should be
+												placed in the header, and requests differing from this format will
+												not be
+												accepted.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+
+
+								</div>
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
+
+	</div>
+	<div class="col">
+		<div class="container">
+			<div class="row mt-4">
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<samp>
+								<h4><a href="/api/interaction">api/interaction</a></h4>
+							</samp>
+						</div>
+						<div class="card-body">
+							<!-- <h5 class="card-title">Special title treatment</h5> -->
+							<p class="card-text">
+								<div class="row">
+
+									<div class="col">
+										<h5 class="card-title">GET</h5>
+										<div>
+											<p>
+												Requests are echoed in a uniform format. Route is the url
+												extension
+												to
+												which
+												the request
+												is send. Token is the user supplied token, which should
+												be placed
+												in
+												the
+												request header.
+												If the token is placed in the request parameters instead of the
+												header, a
+												message is
+												returned informing the user of this fact. Keys are simply
+												the
+												request
+												parameter keys, in
+												the same way Values are parameter values. These
+												attributes are
+												not
+												modified
+												in any way
+												from the originating request and are simply present to allow users
+												to test
+												and
+												debug
+												their functions. Message is a simple response from the
+												server
+												informing
+												the
+												user of any
+												potential issues with their request.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+													<kbd>*</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Route</kbd>
+													<kbd>Token</kbd>
+													<kbd>Data</kbd>
+													<kbd>Keys</kbd>
+													<kbd>Values</kbd>
+													<kbd>Message</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+									<div class="col">
+										<h5 class="card-title">POST</h5>
+										<div>
+											<p>
+												Requests will return a boolean response indicating whether or not
+												the
+												supplied
+												token
+												is
+												valid. Token should be placed in the request header,
+												although
+												validation
+												will
+												still be
+												attempted if placed in the parameters. However, for all other routes
+												the
+												token
+												should be
+												placed in the header, and requests differing from this format will
+												not be
+												accepted.
+											</p>
+										</div>
+										<hr>
+										<div class="row">
+											<div class="col col-md-3">
+												<small>HEADER</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col col-md-auto">
+												<small>PARAMS</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+											<div class="col">
+												<small>RESPONSE</small>
+												<p>
+													<kbd>Token</kbd>
+												</p>
+											</div>
+										</div>
+									</div>
+
+
+
+								</div>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 </div>
 

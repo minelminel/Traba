@@ -60,13 +60,14 @@
 
 		<div class="col col-md-1">
 			<!-- REAL BUTTON TOOLBAR  -->
-			<h5>Actions</h5>
-			<hr>
+
 			<div><small>Message</small></div>
-			<a href="" class="btn btn-primary btn-sm mb-2 btn-block" data-toggle="modal" data-target="#modalContactForm">Email
+			<a href="" class="btn btn-primary btn-sm mb-2 btn-block" data-toggle="modal"
+				data-target="#modalContactForm">Email
 				All
 				Users</a>
 			<div></div>
+			<hr>
 			<div><small>Load</small></div>
 			<form action="{{url_for('load_states')}}" method="post">
 				<input type="hidden" name="_method" value="LOAD">
@@ -74,6 +75,12 @@
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 			</form>
 			<div></div>
+			<form action="{{url_for('load_cities')}}" method="post">
+				<input type="hidden" name="_method" value="LOAD">
+				<input type="submit" value="Load Cities" class="btn btn-dark btn-sm mb-2 btn-block">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			</form>
+			<hr>
 			<div><small>Add</small></div>
 			<form action="{{url_for('add_state')}}" method="get">
 				<input type="hidden" name="_method" value="ADD">
@@ -99,6 +106,7 @@
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 			</form>
 			<div></div>
+			<hr>
 			<div><small>Export</small></div>
 			<form action="{{url_for('export_states')}}" method="get">
 				<input type="hidden" name="_method" value="EXPORT">
@@ -130,6 +138,7 @@
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 			</form>
 			<div></div>
+			<hr>
 			<div><small>Reset</small></div>
 			<form action="{{url_for('reset_states')}}" method="post">
 				<input type="hidden" name="_method" value="RESET">
@@ -281,7 +290,8 @@
 										class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
 									<a href="/edit/state/{{state['id']}}"
 										class="btn btn-outline-info btn-sm pull-right">Edit</a>
-									<a href="/delete/state/{{state['id']}}" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+									<a href="/delete/state/{{state['id']}}"
+										class="btn btn-outline-danger btn-sm pull-right">Delete</a>
 								</td>
 							</tr>
 							{% endfor %}
@@ -361,7 +371,8 @@
 										class="btn btn-outline-secondary btn-sm pull-right">Detail</a>
 									<a href="/edit/city/{{city['id']}}"
 										class="btn btn-outline-info btn-sm pull-right">Edit</a>
-									<a href="/delete/city/{{ city['id'] }}" class="btn btn-outline-danger btn-sm pull-right">Delete</a>
+									<a href="/delete/city/{{ city['id'] }}"
+										class="btn btn-outline-danger btn-sm pull-right">Delete</a>
 								</td>
 							</tr>
 							{% endfor %}
